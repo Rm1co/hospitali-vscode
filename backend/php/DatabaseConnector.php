@@ -12,7 +12,7 @@ class DatabaseConnector {
     private $pdo = null;
     
     // Database configuration
-    private $host = 'localhost';
+    private $host = '10.51.50.147';
     private $db_name = 'hospital_management_system';
     private $user = 'admin';
     private $pass = '12345678';
