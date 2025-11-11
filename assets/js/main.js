@@ -2,14 +2,93 @@
 // 🏥 HOSPITAL FRONTEND MAIN LOGIC
 // ==============================
 
-// New patient and appointment placeholders
+// New patient and appointment modal handlers
 function newPatient() {
-  alert('Open new patient form (placeholder)');
+  document.getElementById("newPatientModal").style.display = "grid";
+}
+
+function closePatientModal() {
+  document.getElementById("newPatientModal").style.display = "none";
+  document.getElementById("newPatientForm").reset();
+}
+
+function savePatient(event) {
+  event.preventDefault();
+  const btn = event.target.querySelector('button[type="submit"]');
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+
+  const data = {
+    first_name: document.getElementById('patientFirstName').value.trim(),
+    last_name: document.getElementById('patientLastName').value.trim(),
+    dob: document.getElementById('patientDOB').value || null,
+    gender: document.getElementById('patientGender').value || null,
+    phone: document.getElementById('patientPhone').value.trim() || null,
+    address: document.getElementById('patientAddress').value.trim() || null
+  };
+
+  if (!data.first_name || !data.last_name) {
+    alert('First and last name are required');
+    btn.disabled = false;
+    btn.textContent = originalText;
+    return;
+  }
+
+  fetch('backend/php/patients.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+  .then(resp => {
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    return resp.json();
+  })
+  .then(json => {
+    alert('Patient added successfully! ID: ' + json.id);
+    closePatientModal();
+    // TODO: Refresh patient list
+  })
+  .catch(err => {
+    alert('Error: ' + err.message);
+    console.error(err);
+  })
+  .finally(() => {
+    btn.disabled = false;
+    btn.textContent = originalText;
+  });
 }
 
 function newAppointment() {
-  alert('Open new appointment form (placeholder)');
+  document.getElementById("newAppointmentModal").style.display = "grid";
 }
+
+function closeAppointmentModal() {
+  document.getElementById("newAppointmentModal").style.display = "none";
+  document.getElementById("newAppointmentForm").reset();
+}
+
+function saveAppointment(event) {
+  event.preventDefault();
+  const data = {
+    patient_id: document.getElementById('appointmentPatientId').value,
+    staff_id: null,
+    appointment_time: document.getElementById('appointmentTime').value,
+    department: document.getElementById('appointmentDepartment').value,
+    status: document.getElementById('appointmentStatus').value
+  };
+  // TODO: POST to backend/php/appointments.php
+  console.log('Save appointment:', data);
+  closeAppointmentModal();
+}
+
+// Close modals when clicking outside
+document.addEventListener('click', (e) => {
+  const patientModal = document.getElementById('newPatientModal');
+  const appointmentModal = document.getElementById('newAppointmentModal');
+  if (e.target === patientModal) closePatientModal();
+  if (e.target === appointmentModal) closeAppointmentModal();
+});
 
 // Keyboard shortcut: 'g' + 'd' focuses the dashboard link
 (function () {

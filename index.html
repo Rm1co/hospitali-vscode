@@ -46,6 +46,75 @@
       </div>
     </aside>
 
+    <!-- New Patient Modal -->
+    <div id="newPatientModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); place-items:center; z-index:1000; grid-template-columns:1fr;">
+      <div style="background:white; padding:24px; border-radius:12px; width:90%; max-width:400px; box-shadow:0 4px 20px rgba(0,0,0,0.2); position:relative;">
+        <button onclick="closePatientModal()" style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:24px;cursor:pointer;">&times;</button>
+        <h3 style="margin-top:0">New Patient</h3>
+        <form id="newPatientForm" onsubmit="savePatient(event)">
+          <label>First Name</label>
+          <input type="text" id="patientFirstName" required style="width:100%;padding:8px;margin:4px 0 10px;border:1px solid #ddd;border-radius:4px;">
+          
+          <label>Last Name</label>
+          <input type="text" id="patientLastName" required style="width:100%;padding:8px;margin:4px 0 10px;border:1px solid #ddd;border-radius:4px;">
+          
+          <label>Date of Birth</label>
+          <input type="date" id="patientDOB" style="width:100%;padding:8px;margin:4px 0 10px;border:1px solid #ddd;border-radius:4px;">
+          
+          <label>Gender</label>
+          <select id="patientGender" style="width:100%;padding:8px;margin:4px 0 10px;border:1px solid #ddd;border-radius:4px;">
+            <option value="">Select</option>
+            <option value="M">Male</option>
+            <option value="F">Female</option>
+          </select>
+          
+          <label>Phone</label>
+          <input type="tel" id="patientPhone" style="width:100%;padding:8px;margin:4px 0 10px;border:1px solid #ddd;border-radius:4px;">
+          
+          <label>Address</label>
+          <input type="text" id="patientAddress" style="width:100%;padding:8px;margin:4px 0 16px;border:1px solid #ddd;border-radius:4px;">
+          
+          <div style="display:flex;justify-content:flex-end;gap:8px;">
+            <button type="button" onclick="closePatientModal()" style="background:#ccc;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;">Cancel</button>
+            <button type="submit" style="background:#2563eb;color:white;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- New Appointment Modal -->
+    <div id="newAppointmentModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); place-items:center; z-index:1000; grid-template-columns:1fr;">
+      <div style="background:white; padding:24px; border-radius:12px; width:90%; max-width:400px; box-shadow:0 4px 20px rgba(0,0,0,0.2); position:relative;">
+        <button onclick="closeAppointmentModal()" style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:24px;cursor:pointer;">&times;</button>
+        <h3 style="margin-top:0">New Appointment</h3>
+        <form id="newAppointmentForm" onsubmit="saveAppointment(event)">
+          <label>Patient ID</label>
+          <input type="number" id="appointmentPatientId" required style="width:100%;padding:8px;margin:4px 0 10px;border:1px solid #ddd;border-radius:4px;">
+          
+          <label>Doctor</label>
+          <input type="text" id="appointmentDoctor" required style="width:100%;padding:8px;margin:4px 0 10px;border:1px solid #ddd;border-radius:4px;">
+          
+          <label>Department</label>
+          <input type="text" id="appointmentDepartment" style="width:100%;padding:8px;margin:4px 0 10px;border:1px solid #ddd;border-radius:4px;">
+          
+          <label>Appointment Time</label>
+          <input type="datetime-local" id="appointmentTime" required style="width:100%;padding:8px;margin:4px 0 10px;border:1px solid #ddd;border-radius:4px;">
+          
+          <label>Status</label>
+          <select id="appointmentStatus" style="width:100%;padding:8px;margin:4px 0 16px;border:1px solid #ddd;border-radius:4px;">
+            <option value="Scheduled">Scheduled</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+          
+          <div style="display:flex;justify-content:flex-end;gap:8px;">
+            <button type="button" onclick="closeAppointmentModal()" style="background:#ccc;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;">Cancel</button>
+            <button type="submit" style="background:#2563eb;color:white;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <main class="main">
       <div class="topbar">
         <button id="theme-toggle" class="chip">🌙 Dark Mode</button>

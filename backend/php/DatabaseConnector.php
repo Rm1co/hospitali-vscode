@@ -1,379 +1,231 @@
 <?php
 /**
- * PDO Database Connector
- * 
- * This class provides a singleton PDO connection to the hospital database.
- * It handles connection initialization, error handling, and provides methods
- * for common database operations.
+ * DatabaseConnector.php
+ * PDO-based singleton database connector and simple query helpers.
+ *
+ * Usage:
+ *   $db = DatabaseConnector::getInstance();
+ *   $pdo = $db->getConnection();
+ *   $rows = $db->fetchAll('SELECT * FROM patients WHERE id > ?', [0]);
  */
 
-class DatabaseConnector {
-    private static $instance = null;
-    private $pdo = null;
-    
-    // Database configuration
-    private $host = '10.51.50.147';
-    private $db_name = 'hospital_management_system';
-    private $user = 'admin';
-    private $pass = '12345678';
-    private $charset = 'utf8mb4';
-    
-    /**
-     * Private constructor to prevent direct instantiation
-     */
-    private function __construct() {
-        $this->connect();
-    }
-    
-    /**
-     * Prevent cloning of the singleton instance
-     */
-    private function __clone() {}
-    
-    /**
-     * Prevent unserializing of the singleton instance
-     */
-    public function __wakeup() {}
-    
-    /**
-     * Get singleton instance of DatabaseConnector
-     * 
-     * @return DatabaseConnector
-     */
-    public static function getInstance() {
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-    
-    /**
-     * Establish PDO connection to the database
-     * 
-     * @throws PDOException
-     * @return void
-     */
-    private function connect() {
-        try {
-            $dsn = "mysql:host={$this->host};dbname={$this->db_name};charset={$this->charset}";
-            
-            $options = [
-                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                PDO::ATTR_EMULATE_PREPARES   => false,
-            ];
-            
-            $this->pdo = new PDO($dsn, $this->user, $this->pass, $options);
-            
-        } catch (PDOException $e) {
-            die('Database Connection Error: ' . $e->getMessage());
-        }
-    }
-    
-    /**
-     * Get the PDO connection instance
-     * 
-     * @return PDO
-     */
-    public function getConnection() {
-        if ($this->pdo === null) {
-            $this->connect();
-        }
-        return $this->pdo;
-    }
-    
-    /**
-     * Execute a prepared statement with parameters
-     * 
-     * @param string $sql SQL query
-     * @param array $params Parameters for prepared statement
-     * @return PDOStatement
-     */
-    public function execute($sql, $params = []) {
-        try {
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute($params);
-            return $stmt;
-        } catch (PDOException $e) {
-            throw new Exception('Query execution failed: ' . $e->getMessage());
-        }
-    }
-    
-    /**
-     * Fetch a single row from query result
-     * 
-     * @param string $sql SQL query
-     * @param array $params Parameters for prepared statement
-     * @return array|false
-     */
-    public function fetchOne($sql, $params = []) {
-        $stmt = $this->execute($sql, $params);
-        return $stmt->fetch();
-    }
-    
-    /**
-     * Fetch all rows from query result
-     * 
-     * @param string $sql SQL query
-     * @param array $params Parameters for prepared statement
-     * @return array
-     */
-    public function fetchAll($sql, $params = []) {
-        $stmt = $this->execute($sql, $params);
-        return $stmt->fetchAll();
-    }
-    
-    /**
-     * Insert a record into the database
-     * 
-     * @param string $table Table name
-     * @param array $data Associative array of column => value
-     * @return string Last inserted ID
-     */
-    public function insert($table, $data) {
-        $columns = implode(', ', array_keys($data));
-        $placeholders = implode(', ', array_fill(0, count($data), '?'));
-        
-        $sql = "INSERT INTO {$table} ({$columns}) VALUES ({$placeholders})";
-        
-        try {
-            $this->execute($sql, array_values($data));
-            return $this->pdo->lastInsertId();
-        } catch (PDOException $e) {
-            throw new Exception('Insert failed: ' . $e->getMessage());
-        }
-    }
-    
-    /**
-     * Update records in the database
-     * 
-     * @param string $table Table name
-     * @param array $data Associative array of column => value
-     * @param string $where WHERE clause (e.g., "id = ?")
-     * @param array $whereParams Parameters for WHERE clause
-     * @return int Number of affected rows
-     */
-    public function update($table, $data, $where, $whereParams = []) {
-        $setClause = implode(', ', array_map(fn($col) => "{$col} = ?", array_keys($data)));
-        
-        $sql = "UPDATE {$table} SET {$setClause} WHERE {$where}";
-        $params = array_merge(array_values($data), $whereParams);
-        
-        try {
-            $stmt = $this->execute($sql, $params);
-            return $stmt->rowCount();
-        } catch (PDOException $e) {
-            throw new Exception('Update failed: ' . $e->getMessage());
-        }
-    }
-    
-    /**
-     * Delete records from the database
-     * 
-     * @param string $table Table name
-     * @param string $where WHERE clause (e.g., "id = ?")
-     * @param array $whereParams Parameters for WHERE clause
-     * @return int Number of affected rows
-     */
-    public function delete($table, $where, $whereParams = []) {
-        $sql = "DELETE FROM {$table} WHERE {$where}";
-        
-        try {
-            $stmt = $this->execute($sql, $whereParams);
-            return $stmt->rowCount();
-        } catch (PDOException $e) {
-            throw new Exception('Delete failed: ' . $e->getMessage());
-        }
-    }
-    
-    /**
-     * Begin a database transaction
-     * 
-     * @return bool
-     */
-    public function beginTransaction() {
-        return $this->pdo->beginTransaction();
-    }
-    
-    /**
-     * Commit a database transaction
-     * 
-     * @return bool
-     */
-    public function commit() {
-        return $this->pdo->commit();
-    }
-    
-    /**
-     * Rollback a database transaction
-     * 
-     * @return bool
-     */
-    public function rollback() {
-        return $this->pdo->rollback();
-    }
-    
-    /**
-     * Close the database connection
-     * 
-     * @return void
-     */
-    public function closeConnection() {
-        $this->pdo = null;
-    }
+class DatabaseConnector
+{
+	/** @var DatabaseConnector|null */
+	private static $instance = null;
+	/** @var \PDO */
+	private $pdo;
 
-    /* -----------------------------------------------------------------
-     * Patients
-     * ----------------------------------------------------------------- */
-    public function getPatients($limit = null) {
-        $sql = "SELECT * FROM patients ORDER BY created_at DESC";
-        if ($limit !== null && is_int($limit)) {
-            $sql .= " LIMIT ?";
-            return $this->fetchAll($sql, [$limit]);
-        }
-        return $this->fetchAll($sql);
-    }
+	/**
+	 * Private constructor to enforce singleton.
+	 */
+	private function __construct()
+	{
+		$host = getenv('DB_HOST') ?: 'localhost';
+		$db   = getenv('DB_NAME') ?: 'hospital';
+		$user = getenv('DB_USER') ?: 'root';
+		$pass = getenv('DB_PASS') ?: 'Aa133542';
+		$charset = getenv('DB_CHARSET') ?: 'utf8mb4';
 
-    public function getPatientById($id) {
-        return $this->fetchOne("SELECT * FROM patients WHERE id = ?", [$id]);
-    }
+		$dsn = "mysql:host={$host};dbname={$db};charset={$charset}";
+		$options = [
+			PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+			PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+			PDO::ATTR_EMULATE_PREPARES   => false,
+		];
 
-    public function createPatient(array $data) {
-        return $this->insert('patients', $data);
-    }
+		try {
+			$this->pdo = new PDO($dsn, $user, $pass, $options);
+		} catch (PDOException $e) {
+			// For security, don't expose DB details in production.
+			throw new RuntimeException('Database connection failed: ' . $e->getMessage());
+		}
+	}
 
-    public function updatePatient($id, array $data) {
-        return $this->update('patients', $data, 'id = ?', [$id]);
-    }
+	/**
+	 * Get singleton instance
+	 * @return DatabaseConnector
+	 */
+	public static function getInstance()
+	{
+		if (self::$instance === null) {
+			self::$instance = new self();
+		}
+		return self::$instance;
+	}
 
-    public function deletePatient($id) {
-        return $this->delete('patients', 'id = ?', [$id]);
-    }
+	/**
+	 * Get raw PDO connection
+	 * @return \PDO
+	 */
+	public function getConnection()
+	{
+		return $this->pdo;
+	}
 
-    /* -----------------------------------------------------------------
-     * Appointments
-     * ----------------------------------------------------------------- */
-    public function getAppointments($date = null) {
-        if ($date !== null) {
-            return $this->fetchAll("SELECT * FROM appointments WHERE DATE(appointment_time) = ? ORDER BY appointment_time", [$date]);
-        }
-        return $this->fetchAll("SELECT * FROM appointments ORDER BY appointment_time");
-    }
+	/**
+	 * Execute a query (SELECT expected) and return all rows
+	 * @param string $sql
+	 * @param array $params
+	 * @return array
+	 */
+	public function fetchAll(string $sql, array $params = []): array
+	{
+		$stmt = $this->pdo->prepare($sql);
+		$stmt->execute($params);
+		return $stmt->fetchAll();
+	}
 
-    public function getAppointmentById($id) {
-        return $this->fetchOne("SELECT * FROM appointments WHERE id = ?", [$id]);
-    }
+	/**
+	 * Execute a query and return single row
+	 * @param string $sql
+	 * @param array $params
+	 * @return array|null
+	 */
+	public function fetchOne(string $sql, array $params = []): ?array
+	{
+		$stmt = $this->pdo->prepare($sql);
+		$stmt->execute($params);
+		$row = $stmt->fetch();
+		return $row === false ? null : $row;
+	}
 
-    public function createAppointment(array $data) {
-        return $this->insert('appointments', $data);
-    }
+	/**
+	 * Execute an arbitrary statement (INSERT/UPDATE/DELETE)
+	 * @param string $sql
+	 * @param array $params
+	 * @return int Number of affected rows
+	 */
+	public function query(string $sql, array $params = []): int
+	{
+		$stmt = $this->pdo->prepare($sql);
+		$stmt->execute($params);
+		return $stmt->rowCount();
+	}
 
-    public function updateAppointment($id, array $data) {
-        return $this->update('appointments', $data, 'id = ?', [$id]);
-    }
+	/**
+	 * Insert a row into a table using associative array of column => value.
+	 * Returns last insert id on success.
+	 * @param string $table
+	 * @param array $data
+	 * @return string Last insert id
+	 */
+	public function insert(string $table, array $data): string
+	{
+		$cols = array_keys($data);
+		$placeholders = array_fill(0, count($cols), '?');
+		$sql = sprintf('INSERT INTO `%s` (%s) VALUES (%s)', $table, implode(',', array_map(function($c){ return "`$c`"; }, $cols)), implode(',', $placeholders));
+		$stmt = $this->pdo->prepare($sql);
+		$stmt->execute(array_values($data));
+		return $this->pdo->lastInsertId();
+	}
 
-    public function updateAppointmentStatus($id, $status) {
-        return $this->update('appointments', ['status' => $status], 'id = ?', [$id]);
-    }
+	/**
+	 * Update rows in table. $data is assoc array of column=>value.
+	 * $where is string e.g. "id = ?" and $whereParams are the parameters for it.
+	 * Returns number of affected rows.
+	 * @param string $table
+	 * @param array $data
+	 * @param string $where
+	 * @param array $whereParams
+	 * @return int
+	 */
+	public function update(string $table, array $data, string $where, array $whereParams = []): int
+	{
+		$cols = array_keys($data);
+		$set = implode(', ', array_map(function($c){ return "`$c` = ?"; }, $cols));
+		$sql = sprintf('UPDATE `%s` SET %s WHERE %s', $table, $set, $where);
+		$stmt = $this->pdo->prepare($sql);
+		$params = array_values($data);
+		$params = array_merge($params, $whereParams);
+		$stmt->execute($params);
+		return $stmt->rowCount();
+	}
 
-    public function deleteAppointment($id) {
-        return $this->delete('appointments', 'id = ?', [$id]);
-    }
+	/**
+	 * Delete rows from table. $where is string and $whereParams are parameters.
+	 * @param string $table
+	 * @param string $where
+	 * @param array $whereParams
+	 * @return int
+	 */
+	public function delete(string $table, string $where, array $whereParams = []): int
+	{
+		$sql = sprintf('DELETE FROM `%s` WHERE %s', $table, $where);
+		$stmt = $this->pdo->prepare($sql);
+		$stmt->execute($whereParams);
+		return $stmt->rowCount();
+	}
 
-    /* -----------------------------------------------------------------
-     * Staff
-     * ----------------------------------------------------------------- */
-    public function getStaff() {
-        return $this->fetchAll("SELECT * FROM staff ORDER BY created_at DESC");
-    }
+	// Convenience methods for patients used by endpoints
+	/**
+	 * Return an array of patients, optionally limited.
+	 * @param int $limit
+	 * @return array
+	 */
+	public function getPatients(int $limit = 50): array
+	{
+		// Use explicit integer interpolation for LIMIT to avoid driver issues with bound LIMIT
+		$limit = max(1, (int)$limit);
+		$sql = "SELECT * FROM `patients` ORDER BY created_at DESC LIMIT {$limit}";
+		$stmt = $this->pdo->query($sql);
+		return $stmt->fetchAll();
+	}
 
-    public function getStaffById($id) {
-        return $this->fetchOne("SELECT * FROM staff WHERE id = ?", [$id]);
-    }
+	/**
+	 * Get a single patient by id
+	 * @param int $id
+	 * @return array|null
+	 */
+	public function getPatientById(int $id): ?array
+	{
+		return $this->fetchOne('SELECT * FROM `patients` WHERE id = ?', [$id]);
+	}
 
-    public function createStaff(array $data) {
-        return $this->insert('staff', $data);
-    }
+	/**
+	 * Update a patient by id using associative data array.
+	 * @param int $id
+	 * @param array $data
+	 * @return int affected rows
+	 */
+	public function updatePatient(int $id, array $data): int
+	{
+		return $this->update('patients', $data, 'id = ?', [$id]);
+	}
 
-    public function updateStaff($id, array $data) {
-        return $this->update('staff', $data, 'id = ?', [$id]);
-    }
+	/**
+	 * Delete a patient by id.
+	 * @param int $id
+	 * @return int affected rows
+	 */
+	public function deletePatient(int $id): int
+	{
+		return $this->delete('patients', 'id = ?', [$id]);
+	}
 
-    public function deleteStaff($id) {
-        return $this->delete('staff', 'id = ?', [$id]);
-    }
+	// Transaction helpers
+	public function beginTransaction(): bool
+	{
+		return $this->pdo->beginTransaction();
+	}
+	public function commit(): bool
+	{
+		return $this->pdo->commit();
+	}
+	public function rollback(): bool
+	{
+		return $this->pdo->rollBack();
+	}
 
-    /* -----------------------------------------------------------------
-     * Inventory
-     * ----------------------------------------------------------------- */
-    public function getInventoryItems() {
-        return $this->fetchAll("SELECT * FROM inventory ORDER BY name");
-    }
-
-    public function getInventoryItemById($id) {
-        return $this->fetchOne("SELECT * FROM inventory WHERE id = ?", [$id]);
-    }
-
-    public function addInventoryItem(array $data) {
-        return $this->insert('inventory', $data);
-    }
-
-    public function updateInventoryItem($id, array $data) {
-        return $this->update('inventory', $data, 'id = ?', [$id]);
-    }
-
-    public function deleteInventoryItem($id) {
-        return $this->delete('inventory', 'id = ?', [$id]);
-    }
-
-    public function adjustInventoryQuantity($id, $delta) {
-        // Use a single UPDATE to avoid race conditions
-        $sql = "UPDATE inventory SET quantity = quantity + ? WHERE id = ?";
-        $stmt = $this->execute($sql, [$delta, $id]);
-        return $stmt->rowCount();
-    }
-
-    /* -----------------------------------------------------------------
-     * Invoices / Billing
-     * ----------------------------------------------------------------- */
-    public function createInvoice(array $data) {
-        // $data expected to contain patient_id, total, status (optional)
-        if (!isset($data['status'])) {
-            $data['status'] = 'unpaid';
-        }
-        return $this->insert('invoices', $data);
-    }
-
-    public function getInvoices($patientId = null) {
-        if ($patientId !== null) {
-            return $this->fetchAll("SELECT * FROM invoices WHERE patient_id = ? ORDER BY created_at DESC", [$patientId]);
-        }
-        return $this->fetchAll("SELECT * FROM invoices ORDER BY created_at DESC");
-    }
-
-    public function getInvoiceById($id) {
-        return $this->fetchOne("SELECT * FROM invoices WHERE id = ?", [$id]);
-    }
-
-    public function updateInvoiceStatus($id, $status) {
-        return $this->update('invoices', ['status' => $status], 'id = ?', [$id]);
-    }
-
-    /* -----------------------------------------------------------------
-     * Reports / Helpers
-     * ----------------------------------------------------------------- */
-    public function getAdmissionsLast7Days() {
-        $sql = "SELECT DATE(created_at) as day, COUNT(*) as count FROM patients WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) GROUP BY DATE(created_at) ORDER BY DATE(created_at)";
-        return $this->fetchAll($sql);
-    }
-
-    public function countActivePatients() {
-        $row = $this->fetchOne("SELECT COUNT(*) as c FROM patients");
-        return $row ? (int)$row['c'] : 0;
-    }
-
-    public function countTodaysAppointments() {
-        $row = $this->fetchOne("SELECT COUNT(*) as c FROM appointments WHERE DATE(appointment_time) = CURDATE()");
-        return $row ? (int)$row['c'] : 0;
-    }
+	// Prevent cloning and unserialize
+	private function __clone() {}
+	public function __wakeup() { throw new \Exception('Cannot unserialize singleton'); }
 }
+
+// Backwards-compatible helper function
+if (!function_exists('db')) {
+	function db(): DatabaseConnector {
+		return DatabaseConnector::getInstance();
+	}
+}
+

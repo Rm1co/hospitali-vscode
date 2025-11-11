@@ -45,3 +45,13 @@ CREATE TABLE invoices (
   status VARCHAR(50),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Accounts table to store login credentials for patients
+CREATE TABLE patient_accounts (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  patient_id INT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE SET NULL
+);
