@@ -1,0 +1,181 @@
+
+/* Login page styles for patients-login.html */
+:root{
+	--bg: #f4f6f8;
+	--card: #ffffff;
+	--muted: #6b7280;
+	--accent: #145ea8;
+	--accent-600: #0f4f8e;
+	--danger: #dc2626;
+	--input-border: #d1d5db;
+	--glass: rgba(255,255,255,0.6);
+}
+
+html[data-theme='dark']{
+	--bg: #0b1220;
+	--card: #0f1724;
+	--muted: #94a3b8;
+	--accent: #3b82f6;
+	--accent-600: #2563eb;
+	--danger: #f87171;
+	--input-border: #273449;
+	--glass: rgba(255,255,255,0.02);
+}
+
+*{box-sizing:border-box}
+body{
+	margin:0;
+	font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+	background: linear-gradient(180deg,var(--bg), #e9eef6 200px);
+	min-height:100vh;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	color:var(--muted);
+}
+
+.login-container{
+	width:100%;
+	max-width:420px;
+	padding:24px;
+}
+
+.login-box{
+	background:var(--card);
+	border-radius:12px;
+	padding:28px;
+	box-shadow: 0 10px 30px rgba(15,23,42,0.08);
+	border:1px solid rgba(15,23,42,0.03);
+}
+
+.login-box h2{
+	margin:0 0 18px 0;
+	color:var(--accent-600);
+	font-size:20px;
+}
+
+.input-group{
+	position:relative;
+	margin-bottom:14px;
+}
+
+.input-group input{
+	width:100%;
+	padding:14px 44px 12px 14px;
+	border-radius:8px;
+	border:1px solid var(--input-border);
+	background:transparent;
+	outline:none;
+	font-size:14px;
+	color:inherit;
+	transition:box-shadow .12s, border-color .12s;
+}
+
+.input-group input:focus{
+	border-color:var(--accent);
+	box-shadow:0 4px 14px rgba(59,130,246,0.12);
+}
+
+.input-group label{
+	position:absolute;
+	left:12px;
+	top:12px;
+	font-size:13px;
+	color:var(--muted);
+	pointer-events:none;
+	transition:transform .12s ease, font-size .12s ease, top .12s ease;
+}
+
+.input-group input:not(:placeholder-shown) + label,
+.input-group input:focus + label{
+	transform:translateY(-18px);
+	font-size:12px;
+	top:6px;
+	color:var(--accent-600);
+}
+
+.input-group i{
+	position:absolute;
+	right:12px;
+	top:12px;
+	color:var(--muted);
+	font-size:16px;
+}
+
+.btn{
+	display:inline-block;
+	width:100%;
+	padding:12px 14px;
+	background:linear-gradient(180deg,var(--accent),var(--accent-600));
+	color:#fff;
+	border:none;
+	border-radius:8px;
+	font-weight:600;
+	cursor:pointer;
+	transition:transform .08s ease, box-shadow .08s ease;
+}
+
+.btn:active{transform:translateY(1px)}
+
+.error{
+	color:var(--danger);
+	font-size:13px;
+	min-height:18px;
+	margin-top:8px;
+}
+
+.login-footer{
+	display:flex;
+	justify-content:space-between;
+	align-items:center;
+	margin-top:16px;
+}
+
+.login-footer a{color:var(--accent);text-decoration:none}
+
+.theme-btn{
+	background:transparent;
+	border:1px solid var(--input-border);
+	padding:6px 10px;
+	border-radius:8px;
+	cursor:pointer;
+	display:inline-flex;
+	align-items:center;
+	gap:8px;
+	font-size:14px;
+	color:inherit;
+	transition:background .12s ease, color .12s ease, transform .06s ease, border-color .12s ease;
+}
+
+/* Hover, focus and active states */
+.theme-btn:hover{ background:var(--glass); }
+.theme-btn:focus{ outline:2px solid rgba(59,130,246,0.12); outline-offset:2px }
+.theme-btn:active{ transform:translateY(1px) }
+
+/* When theme is dark, give the button a subtle inverted style */
+html[data-theme='dark'] .theme-btn{
+	background:rgba(255,255,255,0.02);
+	border-color:rgba(255,255,255,0.04);
+	color:var(--muted);
+}
+
+/* Accessible pressed state: JS can toggle aria-pressed */
+.theme-btn[aria-pressed="true"]{
+	background:linear-gradient(180deg,var(--accent),var(--accent-600));
+	color:#fff;
+	border-color:transparent;
+}
+
+html[data-theme='dark'] .theme-btn[aria-pressed="true"]{
+	box-shadow:0 6px 20px rgba(59,130,246,0.18);
+}
+
+
+@media (max-width:480px){
+	.login-box{padding:18px;border-radius:10px}
+	.login-container{padding:18px}
+}
+
+/* small accessibility tweaks */
+.login-box:focus-within{outline:2px solid rgba(59,130,246,0.06)}
+
