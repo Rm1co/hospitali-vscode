@@ -13,9 +13,9 @@ class DatabaseConnector {
     
     // Database configuration
     private $host = 'localhost';
-    private $db_name = 'hospital_db';
-    private $user = 'root';
-    private $pass = 'password';
+    private $db_name = 'hospital_management_system';
+    private $user = 'admin';
+    private $pass = '12345678';
     private $charset = 'utf8mb4';
     
     /**
