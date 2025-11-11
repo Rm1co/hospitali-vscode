@@ -221,4 +221,159 @@ class DatabaseConnector {
     public function closeConnection() {
         $this->pdo = null;
     }
+
+    /* -----------------------------------------------------------------
+     * Patients
+     * ----------------------------------------------------------------- */
+    public function getPatients($limit = null) {
+        $sql = "SELECT * FROM patients ORDER BY created_at DESC";
+        if ($limit !== null && is_int($limit)) {
+            $sql .= " LIMIT ?";
+            return $this->fetchAll($sql, [$limit]);
+        }
+        return $this->fetchAll($sql);
+    }
+
+    public function getPatientById($id) {
+        return $this->fetchOne("SELECT * FROM patients WHERE id = ?", [$id]);
+    }
+
+    public function createPatient(array $data) {
+        return $this->insert('patients', $data);
+    }
+
+    public function updatePatient($id, array $data) {
+        return $this->update('patients', $data, 'id = ?', [$id]);
+    }
+
+    public function deletePatient($id) {
+        return $this->delete('patients', 'id = ?', [$id]);
+    }
+
+    /* -----------------------------------------------------------------
+     * Appointments
+     * ----------------------------------------------------------------- */
+    public function getAppointments($date = null) {
+        if ($date !== null) {
+            return $this->fetchAll("SELECT * FROM appointments WHERE DATE(appointment_time) = ? ORDER BY appointment_time", [$date]);
+        }
+        return $this->fetchAll("SELECT * FROM appointments ORDER BY appointment_time");
+    }
+
+    public function getAppointmentById($id) {
+        return $this->fetchOne("SELECT * FROM appointments WHERE id = ?", [$id]);
+    }
+
+    public function createAppointment(array $data) {
+        return $this->insert('appointments', $data);
+    }
+
+    public function updateAppointment($id, array $data) {
+        return $this->update('appointments', $data, 'id = ?', [$id]);
+    }
+
+    public function updateAppointmentStatus($id, $status) {
+        return $this->update('appointments', ['status' => $status], 'id = ?', [$id]);
+    }
+
+    public function deleteAppointment($id) {
+        return $this->delete('appointments', 'id = ?', [$id]);
+    }
+
+    /* -----------------------------------------------------------------
+     * Staff
+     * ----------------------------------------------------------------- */
+    public function getStaff() {
+        return $this->fetchAll("SELECT * FROM staff ORDER BY created_at DESC");
+    }
+
+    public function getStaffById($id) {
+        return $this->fetchOne("SELECT * FROM staff WHERE id = ?", [$id]);
+    }
+
+    public function createStaff(array $data) {
+        return $this->insert('staff', $data);
+    }
+
+    public function updateStaff($id, array $data) {
+        return $this->update('staff', $data, 'id = ?', [$id]);
+    }
+
+    public function deleteStaff($id) {
+        return $this->delete('staff', 'id = ?', [$id]);
+    }
+
+    /* -----------------------------------------------------------------
+     * Inventory
+     * ----------------------------------------------------------------- */
+    public function getInventoryItems() {
+        return $this->fetchAll("SELECT * FROM inventory ORDER BY name");
+    }
+
+    public function getInventoryItemById($id) {
+        return $this->fetchOne("SELECT * FROM inventory WHERE id = ?", [$id]);
+    }
+
+    public function addInventoryItem(array $data) {
+        return $this->insert('inventory', $data);
+    }
+
+    public function updateInventoryItem($id, array $data) {
+        return $this->update('inventory', $data, 'id = ?', [$id]);
+    }
+
+    public function deleteInventoryItem($id) {
+        return $this->delete('inventory', 'id = ?', [$id]);
+    }
+
+    public function adjustInventoryQuantity($id, $delta) {
+        // Use a single UPDATE to avoid race conditions
+        $sql = "UPDATE inventory SET quantity = quantity + ? WHERE id = ?";
+        $stmt = $this->execute($sql, [$delta, $id]);
+        return $stmt->rowCount();
+    }
+
+    /* -----------------------------------------------------------------
+     * Invoices / Billing
+     * ----------------------------------------------------------------- */
+    public function createInvoice(array $data) {
+        // $data expected to contain patient_id, total, status (optional)
+        if (!isset($data['status'])) {
+            $data['status'] = 'unpaid';
+        }
+        return $this->insert('invoices', $data);
+    }
+
+    public function getInvoices($patientId = null) {
+        if ($patientId !== null) {
+            return $this->fetchAll("SELECT * FROM invoices WHERE patient_id = ? ORDER BY created_at DESC", [$patientId]);
+        }
+        return $this->fetchAll("SELECT * FROM invoices ORDER BY created_at DESC");
+    }
+
+    public function getInvoiceById($id) {
+        return $this->fetchOne("SELECT * FROM invoices WHERE id = ?", [$id]);
+    }
+
+    public function updateInvoiceStatus($id, $status) {
+        return $this->update('invoices', ['status' => $status], 'id = ?', [$id]);
+    }
+
+    /* -----------------------------------------------------------------
+     * Reports / Helpers
+     * ----------------------------------------------------------------- */
+    public function getAdmissionsLast7Days() {
+        $sql = "SELECT DATE(created_at) as day, COUNT(*) as count FROM patients WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) GROUP BY DATE(created_at) ORDER BY DATE(created_at)";
+        return $this->fetchAll($sql);
+    }
+
+    public function countActivePatients() {
+        $row = $this->fetchOne("SELECT COUNT(*) as c FROM patients");
+        return $row ? (int)$row['c'] : 0;
+    }
+
+    public function countTodaysAppointments() {
+        $row = $this->fetchOne("SELECT COUNT(*) as c FROM appointments WHERE DATE(appointment_time) = CURDATE()");
+        return $row ? (int)$row['c'] : 0;
+    }
 }
