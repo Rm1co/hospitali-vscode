@@ -1,0 +1,136 @@
+:root {
+  --bg: #f0f4f8;
+  --card: #ffffff;
+  --text: #111827;
+  --primary: #06b6d4;
+  --accent: #0284c7;
+}
+
+[data-theme="dark"] {
+  --bg: #0f172a;
+  --card: #1e293b;
+  --text: #f8fafc;
+  --primary: #38bdf8;
+  --accent: #06b6d4;
+}
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  transition: background 0.3s, color 0.3s;
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.login-box {
+  background: var(--card);
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  width: 350px;
+  transition: background 0.3s, color 0.3s;
+}
+
+.login-box h2 {
+  text-align: center;
+  color: var(--primary);
+  margin-bottom: 25px;
+}
+
+.input-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 10px 36px 10px 10px;
+  border: none;
+  border-bottom: 2px solid var(--primary);
+  background: transparent;
+  color: var(--text);
+  outline: none;
+}
+
+.input-group label {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: #888;
+  pointer-events: none;
+  transition: 0.3s;
+}
+
+.input-group input:focus ~ label,
+.input-group input:valid ~ label {
+  top: -10px;
+  left: 5px;
+  font-size: 12px;
+  color: var(--primary);
+}
+
+.input-group i {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  color: var(--primary);
+}
+
+.btn {
+  width: 100%;
+  padding: 12px;
+  background: var(--primary);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
+.login-footer {
+  margin-top: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.login-footer a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.error {
+  color: #ef4444;
+  font-size: 13px;
+  text-align: center;
+  margin-top: 5px;
+}
+
+.theme-btn {
+  background: var(--card);
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  padding: 4px 8px;
+  cursor: pointer;
+  color: var(--text);
+  transition: 0.3s;
+}
+
+.theme-btn:hover {
+  background: var(--primary);
+  color: white;
+}

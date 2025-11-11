@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Staff | Hospital Management</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/staff.js" defer></script>
+</head>
+<body>
+  <div class="app" role="application">
+    <aside class="sidebar">
+      <div class="brand"><div class="logo">TAH</div><div><h1>Tel Aviv</h1><div class="small">Hospital</div></div></div>
+      <nav>
+        <ul>
+          <li><a href="index.html">Dashboard</a></li>
+          <li><a href="patients.html">Patients</a></li>
+          <li><a href="appointments.html">Appointments</a></li>
+          <li><a href="staff.html" class="active">Staff</a></li>
+          <li><a href="inventory.html">Inventory</a></li>
+          <li><a href="billing.html">Billing</a></li>
+          <li><a href="reports.html">Reports</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h2 style="margin:0">Staff Management</h2>
+        <button class="btn" onclick="addStaff()">+ Add Staff</button>
+      </div>
+
+      <div id="staffTable" class="table-wrap"></div>
+    </main>
+  </div>
+</body>
+</html>
