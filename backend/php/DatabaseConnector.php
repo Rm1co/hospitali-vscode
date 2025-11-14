@@ -21,25 +21,52 @@ class DatabaseConnector
 	 */
 	private function __construct()
 	{
-		$host = getenv('DB_HOST') ?: 'localhost';
+		$host = getenv('DB_HOST') ?: '127.0.0.1';
 		$db   = getenv('DB_NAME') ?: 'hospital';
 		$user = getenv('DB_USER') ?: 'root';
 		$pass = getenv('DB_PASS') ?: 'Aa133542';
 		$charset = getenv('DB_CHARSET') ?: 'utf8mb4';
+		$port = getenv('DB_PORT') ?: 3306;
 
-		$dsn = "mysql:host={$host};dbname={$db};charset={$charset}";
-		$options = [
-			PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-			PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-			PDO::ATTR_EMULATE_PREPARES   => false,
-		];
+		$exceptions = [];
 
+		// MariaDB/MySQL connection attempts
 		try {
+			$dsn = "mysql:host={$host};port={$port};dbname={$db};charset={$charset}";
+			$options = [
+				PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+				PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+				PDO::ATTR_EMULATE_PREPARES   => false,
+			];
 			$this->pdo = new PDO($dsn, $user, $pass, $options);
+			return;
 		} catch (PDOException $e) {
-			// For security, don't expose DB details in production.
-			throw new RuntimeException('Database connection failed: ' . $e->getMessage());
+			$exceptions[] = $e->getMessage();
 		}
+
+		// Fallback: Try to connect without database and create it
+		try {
+			$dsn = "mysql:host={$host};port={$port};charset={$charset}";
+			$options = [
+				PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+				PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+				PDO::ATTR_EMULATE_PREPARES   => false,
+			];
+			$this->pdo = new PDO($dsn, $user, $pass, $options);
+			
+			// Create database if it doesn't exist
+			$this->pdo->exec("CREATE DATABASE IF NOT EXISTS `{$db}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+			
+			// Select the database
+			$this->pdo->exec("USE `{$db}`");
+			
+			return;
+		} catch (PDOException $e) {
+			$exceptions[] = $e->getMessage();
+		}
+
+		// All attempts failed
+		throw new RuntimeException('Database connection failed: ' . end($exceptions));
 	}
 
 	/**

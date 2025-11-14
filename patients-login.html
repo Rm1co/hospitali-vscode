@@ -6,31 +6,390 @@
   <title>Patient Login | Tel Aviv Hospital</title>
   <link rel="stylesheet" href="./login.css" />
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+  <style>
+    .quote-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+      text-align: center;
+      z-index: -1;
+      color: white;
+    }
+
+    .quote-text {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      line-height: 1.4;
+      max-width: 600px;
+    }
+
+    .quote-author {
+      font-size: 16px;
+      opacity: 0.9;
+      font-style: italic;
+    }
+
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 420px;
+      padding: 24px;
+      z-index: 10;
+    }
+
+    .login-box {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .login-box h2 {
+      margin: 0 0 8px 0;
+      color: var(--accent-600);
+      font-size: 24px;
+    }
+
+    .login-subtitle {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      border-bottom: 2px solid var(--input-border);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--muted);
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .tab-btn:hover {
+      color: var(--accent);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .password-strength {
+      margin-bottom: 16px;
+    }
+
+    .strength-meter {
+      width: 100%;
+      height: 6px;
+      background: var(--input-border);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .strength-bar {
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease, background-color 0.3s ease;
+      background-color: #dc2626;
+    }
+
+    .strength-text {
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .strength-text.weak { color: #dc2626; }
+    .strength-text.fair { color: #f59e0b; }
+    .strength-text.good { color: #3b82f6; }
+    .strength-text.strong { color: #10b981; }
+
+    .password-requirements {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .requirement {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 6px 0;
+    }
+
+    .requirement-icon { font-size: 12px; }
+    .requirement.met .requirement-icon { color: #10b981; }
+    .requirement.met { color: #10b981; }
+
+    .verification-section {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .verification-title {
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 12px;
+      font-size: 13px;
+    }
+
+    .verification-code-input {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .code-digit {
+      width: 40px;
+      height: 40px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 600;
+      border: 2px solid var(--input-border);
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text);
+    }
+
+    .code-digit:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: rgba(20, 94, 168, 0.05);
+    }
+
+    .btn-send-code {
+      width: 100%;
+      padding: 8px;
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 12px;
+    }
+
+    .btn-send-code:hover { background: rgba(20, 94, 168, 0.1); }
+    .btn-send-code:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .success-message {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 6px;
+      padding: 12px;
+      color: #10b981;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .success-message.show { display: block; }
+
+    .quote-refresh {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 20px;
+    }
+
+    .quote-refresh:hover { background: rgba(255, 255, 255, 0.3); }
+
+    @media (max-width: 768px) {
+      .quote-text { font-size: 22px; }
+      .login-box { padding: 24px; }
+      .login-box h2 { font-size: 20px; }
+    }
+  </style>
 </head>
 <body>
+  <!-- Background with Quote -->
+  <div id="quote-container" class="quote-container">
+    <div class="quote-text" id="quote-text">Care is a commitment to action.</div>
+    <div class="quote-author" id="quote-author">- Joan Halifax</div>
+    <button class="quote-refresh" onclick="refreshQuote()" title="New quote">↻</button>
+  </div>
+
+  <!-- Login Container -->
   <div class="login-container">
     <div class="login-box">
-      <h2>Patient Login</h2>
-      <form id="login-form">
-        <div class="input-group">
-          <input type="email" id="email" required />
-          <label>Email</label>
-          <i class='bx bxs-envelope'></i>
+      <h2>Patient Portal</h2>
+      <p class="login-subtitle">Login or create an account</p>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+        <button class="tab-btn" onclick="switchTab('signup')">Sign Up</button>
+      </div>
+
+      <!-- Login Tab -->
+      <div id="login-tab" class="tab-content active">
+        <form id="login-form">
+          <div class="input-group">
+            <input type="email" id="login-email" required placeholder=" " />
+            <label>Email</label>
+            <i class='bx bxs-envelope'></i>
+          </div>
+
+          <div class="input-group">
+            <input type="password" id="login-password" required placeholder=" " />
+            <label>Password</label>
+            <i class='bx bxs-lock-alt'></i>
+          </div>
+
+          <button type="submit" class="btn">Login</button>
+          <p class="error" id="login-error-msg"></p>
+        </form>
+
+        <div class="login-footer" style="margin-top: 16px;">
+          <span style="font-size: 13px;"><a href="role-selection.html" style="text-decoration: none; color: var(--accent);">← Back to roles</a></span>
+          <button id="theme-toggle" class="theme-btn">🌙</button>
         </div>
+      </div>
 
-        <div class="input-group">
-          <input type="password" id="password" required />
-          <label>Password</label>
-          <i class='bx bxs-lock-alt'></i>
+      <!-- Sign Up Tab -->
+      <div id="signup-tab" class="tab-content">
+        <form id="signup-form">
+          <div class="input-group">
+            <input type="text" id="first-name" required placeholder=" " />
+            <label>First Name</label>
+            <i class='bx bxs-user'></i>
+          </div>
+
+          <div class="input-group">
+            <input type="text" id="last-name" required placeholder=" " />
+            <label>Last Name</label>
+            <i class='bx bxs-user'></i>
+          </div>
+
+          <div class="input-group">
+            <input type="email" id="signup-email" required placeholder=" " />
+            <label>Email</label>
+            <i class='bx bxs-envelope'></i>
+          </div>
+
+          <div class="input-group">
+            <input type="password" id="signup-password" required placeholder=" " />
+            <label>Password</label>
+            <i class='bx bxs-lock-alt'></i>
+          </div>
+
+          <div class="password-strength" id="strength-container" style="display: none;">
+            <div class="strength-meter">
+              <div class="strength-bar" id="strength-bar"></div>
+            </div>
+            <div class="strength-text" id="strength-text">
+              <span class="requirement-icon">●</span>
+              <span id="strength-label">Very Weak</span>
+            </div>
+          </div>
+
+          <div class="password-requirements" id="requirements-container" style="display: none;">
+            <div class="requirement" id="req-length">
+              <span class="requirement-icon">○</span>
+              <span>At least 8 characters</span>
+            </div>
+            <div class="requirement" id="req-uppercase">
+              <span class="requirement-icon">○</span>
+              <span>One uppercase letter</span>
+            </div>
+            <div class="requirement" id="req-lowercase">
+              <span class="requirement-icon">○</span>
+              <span>One lowercase letter</span>
+            </div>
+            <div class="requirement" id="req-number">
+              <span class="requirement-icon">○</span>
+              <span>One number</span>
+            </div>
+            <div class="requirement" id="req-special">
+              <span class="requirement-icon">○</span>
+              <span>One special character (!@#$%)</span>
+            </div>
+          </div>
+
+          <div class="verification-section">
+            <div class="verification-title">Email Verification</div>
+            <button type="button" class="btn-send-code" id="send-code-btn" onclick="sendVerificationCode(event)">
+              Send Verification Code
+            </button>
+            <div class="verification-code-input" id="code-input-container" style="display: none;">
+              <input type="text" class="code-digit" maxlength="1" inputmode="numeric" />
+              <input type="text" class="code-digit" maxlength="1" inputmode="numeric" />
+              <input type="text" class="code-digit" maxlength="1" inputmode="numeric" />
+              <input type="text" class="code-digit" maxlength="1" inputmode="numeric" />
+              <input type="text" class="code-digit" maxlength="1" inputmode="numeric" />
+              <input type="text" class="code-digit" maxlength="1" inputmode="numeric" />
+            </div>
+            <div class="success-message" id="verification-success">
+              ✓ Email verified successfully!
+            </div>
+          </div>
+
+          <button type="submit" class="btn" id="signup-submit-btn">Create Account</button>
+          <p class="error" id="signup-error-msg"></p>
+        </form>
+
+        <div class="login-footer" style="margin-top: 16px;">
+          <span style="font-size: 13px;"><a href="role-selection.html" style="text-decoration: none; color: var(--accent);">← Back to roles</a></span>
+          <button id="theme-toggle-2" class="theme-btn">🌙</button>
         </div>
-
-        <button type="submit" class="btn">Login</button>
-        <p class="error" id="error-msg"></p>
-      </form>
-
-      <div class="login-footer">
-        <span>Don't have an account? <a href="patients-signup.html">Sign Up</a></span>
-        <button id="theme-toggle" class="theme-btn">🌙 Dark Mode</button>
       </div>
     </div>
   </div>

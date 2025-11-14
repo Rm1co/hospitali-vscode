@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hospital Management System | Role Selection</title>
+  <link rel="stylesheet" href="./role-selection.css" />
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="role-container">
+    <div class="role-card-wrapper">
+      <div class="header">
+        <div class="logo">
+          <div class="logo-circle">TAH</div>
+          <div>
+            <h1>Tel Aviv Hospital</h1>
+            <p class="subtitle">Management System</p>
+          </div>
+        </div>
+        <p class="description">Please select your role to continue</p>
+      </div>
+
+      <div class="roles-grid">
+        <!-- Doctor/Staff Login -->
+        <div class="role-card doctor-card" onclick="navigateTo('staff-login.html')">
+          <div class="role-icon">
+            <i class='bx bxs-user-md'></i>
+          </div>
+          <h3>Doctor</h3>
+          <p>Access patient records, appointments, and medical history</p>
+          <button class="role-btn">Login as Doctor</button>
+        </div>
+
+        <!-- Patient Login -->
+        <div class="role-card patient-card" onclick="navigateTo('patients-login.html')">
+          <div class="role-icon">
+            <i class='bx bxs-user-circle'></i>
+          </div>
+          <h3>Patient</h3>
+          <p>View appointments, medical records, and bills</p>
+          <button class="role-btn">Login as Patient</button>
+        </div>
+
+        <!-- Staff Login -->
+        <div class="role-card staff-card" onclick="navigateTo('staff-login.html')">
+          <div class="role-icon">
+            <i class='bx bxs-group'></i>
+          </div>
+          <h3>Staff</h3>
+          <p>Manage inventory, billing, and administrative tasks</p>
+          <button class="role-btn">Login as Staff</button>
+        </div>
+      </div>
+
+      <div class="footer">
+        <p>&copy; 2025 Tel Aviv Hospital. All rights reserved.</p>
+        <button id="theme-toggle" class="theme-btn">🌙 Dark Mode</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./role-selection.js"></script>
+</body>
+</html>
