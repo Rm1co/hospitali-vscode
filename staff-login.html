@@ -57,22 +57,57 @@
       themeToggle.textContent = currentTheme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
     }
 
-    document.getElementById('login-form').addEventListener('submit', function(e) {
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
       const errorMsg = document.getElementById('error-msg');
+      const btn = document.querySelector('button[type="submit"]');
       
-      if(email && password) {
-        localStorage.setItem('secretary', JSON.stringify({
-          email: email,
-          role: 'secretary',
-          loginTime: new Date().toISOString()
-        }));
-        window.location.href = 'secretary-dashboard.html';
-      } else {
+      if(!email || !password) {
         errorMsg.textContent = 'Please fill in all fields';
+        return;
+      }
+
+      try {
+        btn.disabled = true;
+        btn.textContent = 'Logging in...';
+
+        const response = await fetch('./backend/php/staff-login.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+          const role = data.role.toLowerCase();
+          localStorage.setItem(role, JSON.stringify({
+            id: data.id,
+            email: data.email,
+            name: data.name,
+            role: data.role,
+            loginTime: new Date().toISOString()
+          }));
+          
+          if (role === 'doctor') {
+            window.location.href = 'doctor-dashboard.html';
+          } else if (role === 'secretary') {
+            window.location.href = 'secretary-dashboard.html';
+          } else {
+            window.location.href = 'role-selection.html';
+          }
+        } else {
+          errorMsg.textContent = data.message || 'Login failed';
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        errorMsg.textContent = 'Network error';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Login';
       }
     });
   </script>

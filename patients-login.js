@@ -219,7 +219,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
         patient_id: data.patient_id,
         email: data.email
       }));
-      window.location.href = 'patients.html';
+      window.location.href = 'patient-dashboard.html';
     } else {
       errorMsg.textContent = data.message || 'Login failed';
     }
