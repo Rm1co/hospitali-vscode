@@ -1,8 +1,4 @@
 <?php
-/**
- * get-available-doctors.php
- * Returns doctors who are currently available (no appointments in the next 30 minutes)
- */
 
 header('Content-Type: application/json');
 
@@ -12,7 +8,6 @@ $db = DatabaseConnector::getInstance();
 $pdo = $db->getConnection();
 
 try {
-    // Get doctors with no conflicts in next 30 minutes
     $sql = "
         SELECT DISTINCT
             s.id,

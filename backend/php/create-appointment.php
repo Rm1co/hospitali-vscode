@@ -1,8 +1,4 @@
 <?php
-/**
- * create-appointment.php
- * Creates a new appointment allocation for a patient with a doctor
- */
 
 header('Content-Type: application/json');
 
@@ -14,7 +10,6 @@ $pdo = $db->getConnection();
 try {
     $input = json_decode(file_get_contents('php://input'), true);
 
-    // Validate required fields
     if (!isset($input['patient_id']) || !isset($input['staff_id']) || 
         !isset($input['appointment_time']) || !isset($input['department'])) {
         throw new Exception('Missing required fields');
@@ -27,7 +22,6 @@ try {
     $notes = $input['notes'] ?? '';
     $status = $input['status'] ?? 'Scheduled';
 
-    // Verify doctor exists and is available
     $doctorCheck = $db->fetchOne(
         'SELECT id, role FROM staff WHERE id = ? AND role = "Doctor" AND is_active = TRUE',
         [$staffId]
@@ -37,7 +31,6 @@ try {
         throw new Exception('Doctor not found or inactive');
     }
 
-    // Verify patient exists
     $patientCheck = $db->fetchOne(
         'SELECT id FROM patients WHERE id = ?',
         [$patientId]
@@ -47,7 +40,6 @@ try {
         throw new Exception('Patient not found');
     }
 
-    // Check for conflicting appointments (same doctor, overlapping time ±15 mins)
     $conflictCheck = $db->fetchOne(
         "SELECT id FROM appointments 
          WHERE staff_id = ? 

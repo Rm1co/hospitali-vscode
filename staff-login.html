@@ -36,11 +36,9 @@
   </div>
 
   <script>
-    // Theme toggle
     const themeToggle = document.getElementById('theme-toggle');
     const html = document.documentElement;
 
-    // Load saved theme preference
     const savedTheme = localStorage.getItem('theme') || 'light';
     html.setAttribute('data-theme', savedTheme);
     updateThemeButton();
@@ -59,7 +57,6 @@
       themeToggle.textContent = currentTheme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
     }
 
-    // Login form handler
     document.getElementById('login-form').addEventListener('submit', function(e) {
       e.preventDefault();
       
@@ -67,10 +64,7 @@
       const password = document.getElementById('password').value;
       const errorMsg = document.getElementById('error-msg');
       
-      // Here you would normally send credentials to a server
-      // For now, we'll do a simple validation
       if(email && password) {
-        // Store secretary info and redirect to secretary dashboard
         localStorage.setItem('secretary', JSON.stringify({
           email: email,
           role: 'secretary',

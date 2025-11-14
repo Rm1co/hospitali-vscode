@@ -1,4 +1,3 @@
-// Medical quotes for motivation
 const medicalQuotes = [
   { text: "Care is a commitment to action.", author: "Joan Halifax" },
   { text: "The art of medicine consists of amusing the patient while nature cures the disease.", author: "Voltaire" },
@@ -12,7 +11,6 @@ const medicalQuotes = [
   { text: "The good physician treats the disease; the great physician treats the patient who has the disease.", author: "William Osler" }
 ];
 
-// Tab switching
 function switchTab(tab) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -21,14 +19,12 @@ function switchTab(tab) {
   event.target.classList.add('active');
 }
 
-// Refresh quote
 function refreshQuote() {
   const quote = medicalQuotes[Math.floor(Math.random() * medicalQuotes.length)];
   document.getElementById('quote-text').textContent = `"${quote.text}"`;
   document.getElementById('quote-author').textContent = `- ${quote.author}`;
 }
 
-// Theme toggle
 function setupThemeToggle() {
   const toggles = [document.getElementById('theme-toggle'), document.getElementById('theme-toggle-2')];
   const html = document.documentElement;
@@ -59,7 +55,6 @@ function updateThemeButtons() {
   });
 }
 
-// Password strength checker
 function checkPasswordStrength(password) {
   let strength = 0;
   const requirements = {
@@ -108,7 +103,6 @@ function updateStrengthBar(strength) {
   text.className = 'strength-text ' + classNames[strength];
 }
 
-// Password strength listener
 document.addEventListener('input', function(e) {
   if (e.target.id === 'signup-password') {
     const strengthContainer = document.getElementById('strength-container');
@@ -126,7 +120,6 @@ document.addEventListener('input', function(e) {
   }
 });
 
-// Code input handling
 const codeDigits = document.querySelectorAll('.code-digit');
 codeDigits.forEach((input, index) => {
   input.addEventListener('input', function() {
@@ -142,7 +135,6 @@ codeDigits.forEach((input, index) => {
   });
 });
 
-// Send verification code
 let verificationCode = null;
 let codeExpiry = null;
 
@@ -186,7 +178,6 @@ async function sendVerificationCode(e) {
   }
 }
 
-// Verify code
 function getEnteredCode() {
   return Array.from(codeDigits).map(input => input.value).join('');
 }
@@ -207,7 +198,6 @@ function verifyCode() {
   }
 }
 
-// Login form
 document.getElementById('login-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   
@@ -239,7 +229,6 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
   }
 });
 
-// Sign up form
 document.getElementById('signup-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   
@@ -256,7 +245,6 @@ document.getElementById('signup-form').addEventListener('submit', async (e) => {
     return;
   }
 
-  // Verify email code
   if (!verifyCode()) {
     return;
   }
@@ -287,6 +275,5 @@ document.getElementById('signup-form').addEventListener('submit', async (e) => {
   }
 });
 
-// Initialize
 setupThemeToggle();
 refreshQuote();

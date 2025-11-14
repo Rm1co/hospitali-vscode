@@ -1,16 +1,9 @@
 <?php
-/**
- * send-verification-code.php
- * Sends verification code via email using PHPMailer
- * Gmail App Password: vahi auht awkv kyri
- * Email: brian.ikubu@strathmore.edu
- */
 
 header('Content-Type: application/json');
 
 require_once 'DatabaseConnector.php';
 
-// Check if PHPMailer is installed
 $composerAutoload = __DIR__ . '/../../vendor/autoload.php';
 if (!file_exists($composerAutoload)) {
     http_response_code(500);
@@ -38,28 +31,24 @@ try {
         throw new Exception('Invalid email address');
     }
 
-    // Generate verification code (6 digits)
     $verificationCode = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
     // Initialize PHPMailer
     $mail = new PHPMailer(true);
 
-    // SMTP Configuration for Gmail
     $mail->isSMTP();
     $mail->Host = 'smtp.gmail.com';
     $mail->SMTPAuth = true;
     $mail->Username = 'brian.ikubu@strathmore.edu';
-    $mail->Password = 'vahi auht awkv kyri'; // App-specific password
+    $mail->Password = 'vahi auht awkv kyri';
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
     $mail->Port = 587;
 
-    // Sender
     $mail->setFrom('brian.ikubu@strathmore.edu', 'Tel Aviv Hospital');
 
     // Recipient
     $mail->addAddress($email);
 
-    // Email subject and body
     $mail->isHTML(true);
     $mail->Subject = 'Email Verification - Tel Aviv Hospital';
     $mail->Body = "
@@ -99,11 +88,8 @@ try {
     // Plain text alternative
     $mail->AltBody = "Your verification code is: $verificationCode\n\nThis code will expire in 5 minutes.";
 
-    // Send email
     $mail->send();
 
-    // Return the code (in production, this would NOT be sent to client)
-    // For development/testing purposes only
     echo json_encode([
         'success' => true,
         'code' => $verificationCode, // REMOVE THIS IN PRODUCTION

@@ -1,8 +1,6 @@
-// Theme toggle
 const themeToggle = document.getElementById('theme-toggle');
 const html = document.documentElement;
 
-// Load saved theme preference
 const savedTheme = localStorage.getItem('theme') || 'light';
 html.setAttribute('data-theme', savedTheme);
 updateThemeButton();
@@ -21,12 +19,10 @@ function updateThemeButton() {
   themeToggle.textContent = currentTheme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
 }
 
-// Navigate to selected role login
 function navigateTo(page) {
   window.location.href = page;
 }
 
-// Add keyboard support for role selection
 document.addEventListener('keydown', function(event) {
   const cards = document.querySelectorAll('.role-card');
   if (event.key === 'ArrowRight') {
@@ -49,7 +45,6 @@ document.addEventListener('keydown', function(event) {
   }
 });
 
-// Make cards keyboard accessible
 document.querySelectorAll('.role-card').forEach(card => {
   card.setAttribute('tabindex', '0');
   card.setAttribute('role', 'button');

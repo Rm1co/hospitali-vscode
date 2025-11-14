@@ -1,4 +1,3 @@
-// Theme toggle
 const themeToggle = document.getElementById('theme-toggle');
 const html = document.documentElement;
 
@@ -43,7 +42,6 @@ navLinks.forEach(link => {
   });
 });
 
-// Load available doctors
 async function loadAvailableDoctors() {
   try {
     const response = await fetch('./backend/php/get-available-doctors.php');
@@ -59,7 +57,6 @@ async function loadAvailableDoctors() {
   }
 }
 
-// Render doctors list
 function renderDoctorsList(doctors) {
   const container = document.getElementById('doctors-container');
   
@@ -87,13 +84,11 @@ function renderDoctorsList(doctors) {
     </div>
   `).join('');
 
-  // Load next availability for each doctor
   doctors.forEach(doctor => {
     loadDoctorAvailability(doctor.id);
   });
 }
 
-// Load doctor's next available slot
 async function loadDoctorAvailability(doctorId) {
   try {
     const response = await fetch(`./backend/php/get-doctor-availability.php?doctor_id=${doctorId}`);
@@ -110,12 +105,10 @@ async function loadDoctorAvailability(doctorId) {
   }
 }
 
-// Select doctor
 function selectDoctor(doctorId, doctorName, department) {
   document.getElementById('selected-doctor').value = `${doctorName} - ${department}`;
   document.getElementById('selected-doctor-id').value = doctorId;
   
-  // Highlight selected doctor
   document.querySelectorAll('.doctor-item').forEach(item => {
     item.classList.remove('selected');
   });
@@ -124,7 +117,6 @@ function selectDoctor(doctorId, doctorName, department) {
   document.getElementById('department-select').value = department;
 }
 
-// Load patients
 async function loadPatients() {
   try {
     const response = await fetch('./backend/php/get-patients.php');
@@ -142,7 +134,6 @@ async function loadPatients() {
   }
 }
 
-// Load appointments
 async function loadAppointments() {
   try {
     const response = await fetch('./backend/php/get-appointments.php');
@@ -158,7 +149,6 @@ async function loadAppointments() {
   }
 }
 
-// Render appointments table
 function renderAppointmentsTable(appointments) {
   const tbody = document.getElementById('appointments-body');
   
@@ -187,7 +177,6 @@ function renderAppointmentsTable(appointments) {
   `).join('');
 }
 
-// Load all doctors
 async function loadAllDoctors() {
   try {
     const response = await fetch('./backend/php/get-all-doctors.php');
@@ -201,7 +190,6 @@ async function loadAllDoctors() {
   }
 }
 
-// Render all doctors list
 function renderAllDoctorsList(doctors) {
   const container = document.getElementById('all-doctors-container');
   
@@ -229,7 +217,6 @@ function renderAllDoctorsList(doctors) {
   `).join('');
 }
 
-// Handle allocation form submission
 document.getElementById('allocation-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   
@@ -290,7 +277,6 @@ document.getElementById('allocation-form').addEventListener('submit', async (e) 
   }
 }); 
 
-// Show message
 function showMessage(text, type) {
   const messageEl = document.getElementById('allocation-message');
   messageEl.textContent = text;
@@ -302,27 +288,23 @@ function showMessage(text, type) {
   }, 4000);
 }
 
-// Format time
 function formatTime(timeString) {
   if (!timeString) return 'N/A';
   const date = new Date(timeString);
   return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 }
 
-// Format datetime
 function formatDateTime(dateString) {
   if (!dateString) return 'N/A';
   const date = new Date(dateString);
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
-// Logout
 function logout() {
   localStorage.removeItem('secretary');
   window.location.href = 'role-selection.html';
 }
 
-// Initialize on page load
 window.addEventListener('DOMContentLoaded', () => {
   loadAvailableDoctors();
   loadPatients();
