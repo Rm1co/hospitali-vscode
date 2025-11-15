@@ -288,12 +288,54 @@
     </div>
 
     <div class="btn-group">
-      <button class="btn btn-primary" onclick="bookAppointment()">
-        <i class='bx bxs-calendar-plus'></i> Book New Appointment
+      <button class="btn btn-primary" onclick="showRequestModal()">
+        <i class='bx bxs-calendar-plus'></i> Request Appointment
       </button>
       <button class="btn btn-secondary" onclick="viewProfile()">
         <i class='bx bxs-user'></i> View Profile
       </button>
+    </div>
+  </div>
+
+  <!-- Appointment Request Modal -->
+  <div id="request-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: var(--card-bg); padding: 30px; border-radius: 10px; max-width: 500px; width: 90%;">
+      <h2 style="margin-bottom: 20px;">Request Appointment</h2>
+      <form id="request-form" style="display: flex; flex-direction: column; gap: 15px;">
+        <div>
+          <label style="display: block; margin-bottom: 5px;">Department *</label>
+          <select id="department" required style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; background: var(--card-bg); color: var(--text-color);">
+            <option value="">Select Department</option>
+            <option value="Cardiology">Cardiology</option>
+            <option value="Surgery">Surgery</option>
+            <option value="Pediatrics">Pediatrics</option>
+            <option value="Orthopedics">Orthopedics</option>
+            <option value="Neurology">Neurology</option>
+            <option value="General">General Medicine</option>
+          </select>
+        </div>
+        <div>
+          <label style="display: block; margin-bottom: 5px;">Preferred Date *</label>
+          <input type="date" id="preferred-date" required style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; background: var(--card-bg); color: var(--text-color);">
+        </div>
+        <div>
+          <label style="display: block; margin-bottom: 5px;">Preferred Time *</label>
+          <select id="preferred-time" required style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; background: var(--card-bg); color: var(--text-color);">
+            <option value="">Select Time</option>
+            <option value="Morning (8am-12pm)">Morning (8am-12pm)</option>
+            <option value="Afternoon (12pm-4pm)">Afternoon (12pm-4pm)</option>
+            <option value="Evening (4pm-8pm)">Evening (4pm-8pm)</option>
+          </select>
+        </div>
+        <div>
+          <label style="display: block; margin-bottom: 5px;">Reason for Visit *</label>
+          <textarea id="reason" required rows="4" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; background: var(--card-bg); color: var(--text-color);" placeholder="Describe your symptoms or reason for visit..."></textarea>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+          <button type="submit" class="btn btn-primary" style="flex: 1;">Submit Request</button>
+          <button type="button" onclick="hideRequestModal()" class="btn btn-secondary" style="flex: 1;">Cancel</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -385,6 +427,55 @@
       const date = new Date(dateString);
       return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
     }
+
+    function showRequestModal() {
+      document.getElementById('request-modal').style.display = 'flex';
+      // Set minimum date to today
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('preferred-date').setAttribute('min', today);
+    }
+
+    function hideRequestModal() {
+      document.getElementById('request-modal').style.display = 'none';
+      document.getElementById('request-form').reset();
+    }
+
+    document.getElementById('request-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (!patientData || !patientData.patient_id) {
+        alert('Patient information not found. Please log in again.');
+        return;
+      }
+
+      const requestData = {
+        patient_id: patientData.patient_id,
+        department: document.getElementById('department').value,
+        preferred_date: document.getElementById('preferred-date').value,
+        preferred_time: document.getElementById('preferred-time').value,
+        reason: document.getElementById('reason').value
+      };
+
+      try {
+        const response = await fetch('./backend/php/patient-request-appointment.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(requestData)
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert('Appointment request submitted successfully! Our secretary will contact you soon.');
+          hideRequestModal();
+        } else {
+          alert('Error: ' + data.message);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error submitting request. Please try again.');
+      }
+    });
 
     function bookAppointment() {
       window.location.href = 'appointments.html';
