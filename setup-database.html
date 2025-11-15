@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Setup Database</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .code {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Database Setup</h1>
+    <p>This will set up the necessary tables and create a default admin account.</p>
+    
+    <h3>Step 1: Update Staff Table</h3>
+    <button onclick="updateStaffTable()">Add New Columns to Staff Table</button>
+    <div id="staff-result"></div>
+
+    <h3>Step 2: Create Admins Table</h3>
+    <button onclick="createAdminsTable()">Create Admins Table</button>
+    <div id="admins-result"></div>
+
+    <h3>Step 3: Create Default Admin</h3>
+    <button onclick="createDefaultAdmin()">Create Default Admin Account</button>
+    <div id="admin-create-result"></div>
+    
+    <div class="code" id="admin-credentials" style="display: none;">
+        <strong>Default Admin Credentials:</strong><br>
+        Username: <strong>admin</strong><br>
+        Password: <strong>admin123</strong><br>
+        <br>
+        <em>Please change this password after logging in!</em>
+    </div>
+
+    <script>
+        async function updateStaffTable() {
+            const resultDiv = document.getElementById('staff-result');
+            resultDiv.innerHTML = '<p>Updating staff table...</p>';
+
+            try {
+                const response = await fetch('backend/php/update-staff-columns.php');
+                const data = await response.json();
+
+                if (data.success) {
+                    resultDiv.innerHTML = `<div class="status success">${data.message}</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="status error">Error: ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="status error">Network error: ${error.message}</div>`;
+            }
+        }
+
+        async function createAdminsTable() {
+            const resultDiv = document.getElementById('admins-result');
+            resultDiv.innerHTML = '<p>Creating admins table...</p>';
+
+            try {
+                const response = await fetch('backend/php/create-admins-table.php');
+                const data = await response.json();
+
+                if (data.success) {
+                    resultDiv.innerHTML = `<div class="status success">${data.message}</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="status error">Error: ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="status error">Network error: ${error.message}</div>`;
+            }
+        }
+
+        async function createDefaultAdmin() {
+            const resultDiv = document.getElementById('admin-create-result');
+            const credsDiv = document.getElementById('admin-credentials');
+            resultDiv.innerHTML = '<p>Creating default admin...</p>';
+
+            try {
+                const response = await fetch('backend/php/create-default-admin.php');
+                const data = await response.json();
+
+                if (data.success) {
+                    resultDiv.innerHTML = `<div class="status success">${data.message}</div>`;
+                    credsDiv.style.display = 'block';
+                } else {
+                    resultDiv.innerHTML = `<div class="status error">Error: ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="status error">Network error: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

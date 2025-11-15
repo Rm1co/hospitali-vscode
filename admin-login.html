@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login | Tel Aviv Hospital</title>
+  <link rel="stylesheet" href="./login.css" />
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-box">
+      <h2>Admin Login</h2>
+      <form id="login-form">
+        <div class="input-group">
+          <input type="text" id="username" required />
+          <label>Username</label>
+          <i class='bx bxs-user'></i>
+        </div>
+
+        <div class="input-group">
+          <input type="password" id="password" required />
+          <label>Password</label>
+          <i class='bx bxs-lock-alt'></i>
+        </div>
+
+        <button type="submit" class="btn">Login</button>
+        <p class="error" id="error-msg"></p>
+      </form>
+
+      <div class="login-footer">
+        <span><a href="role-selection.html">← Back to Role Selection</a></span>
+        <button id="theme-toggle" class="theme-btn">🌙 Dark Mode</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const themeToggle = document.getElementById('theme-toggle');
+    const html = document.documentElement;
+
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    html.setAttribute('data-theme', savedTheme);
+    updateThemeButton();
+
+    themeToggle.addEventListener('click', function() {
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      
+      html.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      updateThemeButton();
+    });
+
+    function updateThemeButton() {
+      const currentTheme = html.getAttribute('data-theme');
+      themeToggle.textContent = currentTheme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
+    }
+
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorMsg = document.getElementById('error-msg');
+      const btn = document.querySelector('button[type="submit"]');
+      
+      if(!username || !password) {
+        errorMsg.textContent = 'Please fill in all fields';
+        return;
+      }
+
+      try {
+        btn.disabled = true;
+        btn.textContent = 'Logging in...';
+
+        const response = await fetch('./backend/php/admin-login.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+          localStorage.setItem('admin', JSON.stringify({
+            id: data.id,
+            username: data.username,
+            loginTime: new Date().toISOString()
+          }));
+          
+          window.location.href = 'admin-panel.html';
+        } else {
+          errorMsg.textContent = data.message || 'Login failed';
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        errorMsg.textContent = 'Network error';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Login';
+      }
+    });
+  </script>
+</body>
+</html>
