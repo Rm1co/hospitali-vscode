@@ -19,7 +19,7 @@ try {
     }
 
     $staff = $db->fetchOne(
-        'SELECT id, first_name, last_name, email, password_hash, role FROM staff WHERE email = ? AND is_active = TRUE',
+        'SELECT id, first_name, last_name, email, password_hash, role, is_activated FROM staff WHERE email = ?',
         [$email]
     );
 
@@ -32,6 +32,15 @@ try {
         exit;
     }
 
+    if (!$staff['is_activated']) {
+        http_response_code(403);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Account not activated. Please activate your account first.'
+        ]);
+        exit;
+    }
+
     if (!password_verify($input['password'], $staff['password_hash'])) {
         http_response_code(401);
         echo json_encode([
@@ -39,6 +48,27 @@ try {
             'message' => 'Invalid credentials'
         ]);
         exit;
+    }
+
+    // Check if login type matches role (optional parameter)
+    $loginType = $input['login_type'] ?? null;
+    if ($loginType) {
+        $allowedRoles = [];
+        if ($loginType === 'doctor' && $staff['role'] !== 'Doctor') {
+            http_response_code(403);
+            echo json_encode([
+                'success' => false,
+                'message' => 'This account is not registered as a Doctor. Please use the correct login portal.'
+            ]);
+            exit;
+        } elseif ($loginType === 'staff' && $staff['role'] === 'Doctor') {
+            http_response_code(403);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Doctors should use the Doctor login portal.'
+            ]);
+            exit;
+        }
     }
 
     echo json_encode([

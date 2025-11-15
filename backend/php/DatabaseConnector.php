@@ -7,13 +7,8 @@ class DatabaseConnector
 
 	private function __construct()
 	{
-<<<<<<< Updated upstream
-		$host = getenv('DB_HOST') ?: '127.0.0.1';
-		$db   = getenv('DB_NAME') ?: 'hospital';
-=======
 		$host = getenv('DB_HOST') ?: 'localhost';
 		$db   = getenv('DB_NAME') ?: 'hospitali_db';
->>>>>>> Stashed changes
 		$user = getenv('DB_USER') ?: 'root';
 		$pass = getenv('DB_PASS') ?: 'Ben254wa@#net01H';
 		$charset = getenv('DB_CHARSET') ?: 'utf8mb4';

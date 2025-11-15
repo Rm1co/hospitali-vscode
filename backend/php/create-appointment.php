@@ -23,7 +23,7 @@ try {
     $status = $input['status'] ?? 'Scheduled';
 
     $doctorCheck = $db->fetchOne(
-        'SELECT id, role FROM staff WHERE id = ? AND role = "Doctor" AND is_active = TRUE',
+        'SELECT id, role FROM staff WHERE id = ? AND role = "Doctor" AND is_activated = 1',
         [$staffId]
     );
 

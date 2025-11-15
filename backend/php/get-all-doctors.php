@@ -21,8 +21,7 @@ try {
             s.department,
             s.phone,
             s.email,
-            s.license_number,
-            s.is_active,
+            s.is_activated,
             COUNT(a.id) as appointment_count
         FROM staff s
         LEFT JOIN appointments a ON s.id = a.staff_id 

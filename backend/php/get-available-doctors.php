@@ -9,24 +9,17 @@ $pdo = $db->getConnection();
 
 try {
     $sql = "
-        SELECT DISTINCT
+        SELECT 
             s.id,
             s.first_name,
             s.last_name,
             s.role,
             s.department,
             s.phone,
-            s.email,
-            COUNT(a.id) as appointment_count
+            s.email
         FROM staff s
-        LEFT JOIN appointments a ON s.id = a.staff_id 
-            AND a.appointment_time > NOW() 
-            AND a.appointment_time < DATE_ADD(NOW(), INTERVAL 30 MINUTE)
-            AND a.status NOT IN ('Cancelled', 'No-show')
         WHERE s.role = 'Doctor' 
-            AND s.is_active = TRUE
-        GROUP BY s.id
-        HAVING appointment_count = 0
+            AND s.is_activated = 1
         ORDER BY s.first_name, s.last_name
     ";
     
@@ -37,7 +30,7 @@ try {
     echo json_encode([
         'success' => true,
         'doctors' => $doctors,
-        'message' => 'Available doctors retrieved'
+        'message' => 'Registered doctors retrieved'
     ]);
 } catch (Exception $e) {
     http_response_code(500);
