@@ -1,3 +1,7 @@
+-- Create database if it doesn't exist
+CREATE DATABASE IF NOT EXISTS hospitali_db;
+USE hospitali_db;
+
 -- Simple schema for hospital management (starter)
 CREATE TABLE patients (
   id INT AUTO_INCREMENT PRIMARY KEY,
