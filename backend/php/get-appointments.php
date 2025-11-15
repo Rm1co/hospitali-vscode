@@ -12,6 +12,10 @@ $db = DatabaseConnector::getInstance();
 $pdo = $db->getConnection();
 
 try {
+    // Check if filtering by patient_id or doctor_id
+    $patientId = isset($_GET['patient_id']) ? (int)$_GET['patient_id'] : null;
+    $doctorId = isset($_GET['doctor_id']) ? (int)$_GET['doctor_id'] : null;
+    
     $sql = "
         SELECT 
             a.id,
@@ -30,11 +34,29 @@ try {
         FROM appointments a
         LEFT JOIN patients p ON a.patient_id = p.id
         LEFT JOIN staff s ON a.staff_id = s.id
-        ORDER BY a.appointment_time DESC
     ";
     
+    $params = [];
+    $conditions = [];
+    
+    if ($patientId) {
+        $conditions[] = "a.patient_id = ?";
+        $params[] = $patientId;
+    }
+    
+    if ($doctorId) {
+        $conditions[] = "a.staff_id = ?";
+        $params[] = $doctorId;
+    }
+    
+    if (!empty($conditions)) {
+        $sql .= " WHERE " . implode(" AND ", $conditions);
+    }
+    
+    $sql .= " ORDER BY a.appointment_time DESC";
+    
     $stmt = $pdo->prepare($sql);
-    $stmt->execute();
+    $stmt->execute($params);
     $appointments = $stmt->fetchAll();
     
     echo json_encode([
