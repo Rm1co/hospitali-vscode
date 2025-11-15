@@ -22,40 +22,52 @@
       </div>
 
       <div class="roles-grid">
-        <!-- Doctor/Staff Login -->
-        <div class="role-card doctor-card" onclick="navigateTo('staff-login.html')">
+        <!-- Doctor Login -->
+        <div class="role-card doctor-card">
           <div class="role-icon">
             <i class='bx bxs-user-md'></i>
           </div>
           <h3>Doctor</h3>
           <p>Access patient records, appointments, and medical history</p>
-          <button class="role-btn">Login as Doctor</button>
+          <div style="display:flex;gap:8px;margin-top:12px;">
+            <button class="role-btn" onclick="navigateTo('doctor-login.html')" style="flex:1">Login</button>
+            <button class="role-btn" onclick="navigateTo('staff-activate.html')" style="flex:1;background:#10b981">Activate</button>
+          </div>
         </div>
 
         <!-- Patient Login -->
-        <div class="role-card patient-card" onclick="navigateTo('patients-login.html')">
+        <div class="role-card patient-card">
           <div class="role-icon">
             <i class='bx bxs-user-circle'></i>
           </div>
           <h3>Patient</h3>
           <p>View appointments, medical records, and bills</p>
-          <button class="role-btn">Login as Patient</button>
+          <div style="display:flex;gap:8px;margin-top:12px;">
+            <button class="role-btn" onclick="navigateTo('patients-login.html')" style="flex:1">Login</button>
+            <button class="role-btn" onclick="navigateTo('patients-signup.html')" style="flex:1;background:#10b981">Sign Up</button>
+          </div>
         </div>
 
         <!-- Staff Login -->
-        <div class="role-card staff-card" onclick="navigateTo('staff-login.html')">
+        <div class="role-card staff-card">
           <div class="role-icon">
             <i class='bx bxs-group'></i>
           </div>
           <h3>Staff</h3>
           <p>Manage inventory, billing, and administrative tasks</p>
-          <button class="role-btn">Login as Staff</button>
+          <div style="display:flex;gap:8px;margin-top:12px;">
+            <button class="role-btn" onclick="navigateTo('staff-login.html')" style="flex:1">Login</button>
+            <button class="role-btn" onclick="navigateTo('staff-activate.html')" style="flex:1;background:#10b981">Activate</button>
+          </div>
         </div>
       </div>
 
       <div class="footer">
         <p>&copy; 2025 Tel Aviv Hospital. All rights reserved.</p>
-        <button id="theme-toggle" class="theme-btn">🌙 Dark Mode</button>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <a href="admin-login.html" style="color: #6b7280; font-size: 14px; text-decoration: none;">Admin Panel</a>
+          <button id="theme-toggle" class="theme-btn">🌙 Dark Mode</button>
+        </div>
       </div>
     </div>
   </div>

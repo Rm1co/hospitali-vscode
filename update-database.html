@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Database Update</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Database Table Update</h1>
+    <p>This will add email and password_hash columns to the staff table.</p>
+    <button onclick="updateDatabase()">Run Update</button>
+    <div id="result"></div>
+
+    <script>
+        async function updateDatabase() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>Updating database...</p>';
+
+            try {
+                const response = await fetch('backend/php/update-staff-columns.php');
+                const data = await response.json();
+
+                if (data.success) {
+                    resultDiv.innerHTML = `<div class="status success">${data.message}</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="status error">Error: ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="status error">Network error: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

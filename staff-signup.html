@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Staff Sign Up | Tel Aviv Hospital</title>
+  <link rel="stylesheet" href="./login.css" />
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-box" style="max-width: 500px;">
+      <h2>Staff Sign Up</h2>
+      <form id="signup-form">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="input-group">
+            <input type="text" id="first-name" required />
+            <label>First Name</label>
+            <i class='bx bxs-user'></i>
+          </div>
+
+          <div class="input-group">
+            <input type="text" id="last-name" required />
+            <label>Last Name</label>
+            <i class='bx bxs-user'></i>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <input type="email" id="email" required />
+          <label>Email</label>
+          <i class='bx bxs-envelope'></i>
+        </div>
+
+        <div class="input-group">
+          <input type="tel" id="phone" required />
+          <label>Phone Number</label>
+          <i class='bx bxs-phone'></i>
+        </div>
+
+        <div class="input-group">
+          <select id="role" required style="padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px; width: 100%; background: white;">
+            <option value="">Select Role</option>
+            <option value="Doctor">Doctor</option>
+            <option value="Nurse">Nurse</option>
+            <option value="Secretary">Secretary</option>
+            <option value="Administrator">Administrator</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <input type="text" id="department" required />
+          <label>Department</label>
+          <i class='bx bxs-building'></i>
+        </div>
+
+        <div class="input-group">
+          <input type="password" id="password" required />
+          <label>Password</label>
+          <i class='bx bxs-lock-alt'></i>
+        </div>
+
+        <div class="input-group">
+          <input type="password" id="confirm-password" required />
+          <label>Confirm Password</label>
+          <i class='bx bxs-lock-alt'></i>
+        </div>
+
+        <button type="submit" class="btn">Create Account</button>
+        <p class="error" id="error-msg"></p>
+        <p class="success" id="success-msg"></p>
+      </form>
+
+      <div class="login-footer">
+        <span>Already have an account? <a href="staff-login.html">Login</a></span>
+        <span><a href="role-selection.html">← Back to Role Selection</a></span>
+        <button id="theme-toggle" class="theme-btn">🌙 Dark Mode</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const themeToggle = document.getElementById('theme-toggle');
+    const html = document.documentElement;
+
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    html.setAttribute('data-theme', savedTheme);
+    updateThemeButton();
+
+    themeToggle.addEventListener('click', function() {
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      
+      html.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      updateThemeButton();
+    });
+
+    function updateThemeButton() {
+      const currentTheme = html.getAttribute('data-theme');
+      themeToggle.textContent = currentTheme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
+    }
+
+    document.getElementById('signup-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const firstName = document.getElementById('first-name').value.trim();
+      const lastName = document.getElementById('last-name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const role = document.getElementById('role').value;
+      const department = document.getElementById('department').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+      
+      const errorMsg = document.getElementById('error-msg');
+      const successMsg = document.getElementById('success-msg');
+      const btn = document.querySelector('button[type="submit"]');
+      
+      errorMsg.textContent = '';
+      successMsg.textContent = '';
+
+      if(!firstName || !lastName || !email || !phone || !role || !department || !password || !confirmPassword) {
+        errorMsg.textContent = 'Please fill in all fields';
+        return;
+      }
+
+      if(password !== confirmPassword) {
+        errorMsg.textContent = 'Passwords do not match';
+        return;
+      }
+
+      if(password.length < 6) {
+        errorMsg.textContent = 'Password must be at least 6 characters';
+        return;
+      }
+
+      try {
+        btn.disabled = true;
+        btn.textContent = 'Creating Account...';
+
+        const response = await fetch('./backend/php/staff-register.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            first_name: firstName,
+            last_name: lastName,
+            email: email,
+            phone: phone,
+            role: role,
+            department: department,
+            password: password
+          })
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+          successMsg.textContent = 'Account created successfully! Redirecting to login...';
+          document.getElementById('signup-form').reset();
+          
+          setTimeout(() => {
+            window.location.href = 'staff-login.html';
+          }, 2000);
+        } else {
+          errorMsg.textContent = data.message || 'Registration failed';
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        errorMsg.textContent = 'Network error. Please try again.';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
+      }
+    });
+  </script>
+  
+  <style>
+    .success {
+      color: #10b981;
+      font-size: 14px;
+      margin-top: 10px;
+      text-align: center;
+    }
+  </style>
+</body>
+</html>

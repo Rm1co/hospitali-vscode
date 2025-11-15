@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Staff Login | Tel Aviv Hospital</title>
+  <title>Doctor Login | Tel Aviv Hospital</title>
   <link rel="stylesheet" href="./login.css" />
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
 </head>
 <body>
   <div class="login-container">
     <div class="login-box">
-      <h2>Staff Login</h2>
+      <h2>Doctor Login</h2>
       <form id="login-form">
         <div class="input-group">
           <input type="email" id="email" required />
@@ -80,15 +80,14 @@
           body: JSON.stringify({ 
             email, 
             password,
-            login_type: 'staff'
+            login_type: 'doctor'
           })
         });
 
         const data = await response.json();
         
         if (data.success) {
-          const role = data.role.toLowerCase();
-          localStorage.setItem(role, JSON.stringify({
+          localStorage.setItem('doctor', JSON.stringify({
             id: data.id,
             email: data.email,
             name: data.name,
@@ -96,13 +95,7 @@
             loginTime: new Date().toISOString()
           }));
           
-          if (role === 'doctor') {
-            window.location.href = 'doctor-dashboard.html';
-          } else if (role === 'secretary') {
-            window.location.href = 'secretary-dashboard.html';
-          } else {
-            window.location.href = 'role-selection.html';
-          }
+          window.location.href = 'doctor-dashboard.html';
         } else {
           errorMsg.textContent = data.message || 'Login failed';
         }

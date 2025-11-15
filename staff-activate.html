@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Activate Account | Tel Aviv Hospital</title>
+  <link rel="stylesheet" href="./login.css" />
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-box" style="max-width: 500px;">
+      <h2>Activate Your Account</h2>
+      <p style="color: #6b7280; margin-bottom: 20px;">Enter the credentials provided by your administrator to activate your account and set a new password.</p>
+      
+      <form id="activate-form">
+        <div class="input-group">
+          <input type="email" id="email" required />
+          <label>Email</label>
+          <i class='bx bxs-envelope'></i>
+        </div>
+
+        <div class="input-group">
+          <input type="password" id="temp-password" required />
+          <label>Temporary Password</label>
+          <i class='bx bxs-key'></i>
+        </div>
+
+        <hr style="margin: 20px 0; border: none; border-top: 1px solid #e5e7eb;">
+
+        <div class="input-group">
+          <input type="password" id="new-password" required />
+          <label>New Password (min 6 characters)</label>
+          <i class='bx bxs-lock-alt'></i>
+        </div>
+
+        <div class="input-group">
+          <input type="password" id="confirm-password" required />
+          <label>Confirm New Password</label>
+          <i class='bx bxs-lock-alt'></i>
+        </div>
+
+        <button type="submit" class="btn">Activate Account</button>
+        <p class="error" id="error-msg"></p>
+        <p class="success" id="success-msg"></p>
+      </form>
+
+      <div class="login-footer">
+        <span><a href="role-selection.html">← Back to Role Selection</a></span>
+        <button id="theme-toggle" class="theme-btn">🌙 Dark Mode</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const themeToggle = document.getElementById('theme-toggle');
+    const html = document.documentElement;
+
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    html.setAttribute('data-theme', savedTheme);
+    updateThemeButton();
+
+    themeToggle.addEventListener('click', function() {
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      
+      html.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      updateThemeButton();
+    });
+
+    function updateThemeButton() {
+      const currentTheme = html.getAttribute('data-theme');
+      themeToggle.textContent = currentTheme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
+    }
+
+    // Check for activation token in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    if (token) {
+      // Pre-verify token and get email
+      fetch(`./backend/php/staff-verify-token.php?token=${token}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.email) {
+            document.getElementById('email').value = data.email;
+            document.getElementById('email').disabled = true;
+          }
+        });
+    }
+
+    document.getElementById('activate-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value.trim();
+      const tempPassword = document.getElementById('temp-password').value;
+      const newPassword = document.getElementById('new-password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+      
+      const errorMsg = document.getElementById('error-msg');
+      const successMsg = document.getElementById('success-msg');
+      const btn = document.querySelector('button[type="submit"]');
+      
+      errorMsg.textContent = '';
+      successMsg.textContent = '';
+
+      if (newPassword !== confirmPassword) {
+        errorMsg.textContent = 'New passwords do not match';
+        return;
+      }
+
+      if (newPassword.length < 6) {
+        errorMsg.textContent = 'New password must be at least 6 characters';
+        return;
+      }
+
+      try {
+        btn.disabled = true;
+        btn.textContent = 'Activating...';
+
+        const response = await fetch('./backend/php/staff-activate.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: email,
+            temp_password: tempPassword,
+            new_password: newPassword,
+            activation_token: token
+          })
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+          successMsg.textContent = 'Account activated successfully! Redirecting to login...';
+          document.getElementById('activate-form').reset();
+          
+          setTimeout(() => {
+            window.location.href = 'staff-login.html';
+          }, 2000);
+        } else {
+          errorMsg.textContent = data.message || 'Activation failed';
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        errorMsg.textContent = 'Network error. Please try again.';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Activate Account';
+      }
+    });
+  </script>
+  
+  <style>
+    .success {
+      color: #10b981;
+      font-size: 14px;
+      margin-top: 10px;
+      text-align: center;
+    }
+  </style>
+</body>
+</html>
