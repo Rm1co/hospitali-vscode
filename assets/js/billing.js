@@ -45,7 +45,7 @@ function showSuccessMessage(message) {
 
 async function loadInvoices() {
   try {
-    const response = await fetch('backend/php/billing.php?action=list');
+    const response = await fetch('../../backend/php/billing.php?action=list');
     const result = await response.json();
     if (result.success) {
       invoices = result.data || [];
@@ -62,7 +62,7 @@ async function loadInvoices() {
 
 async function loadPatients() {
   try {
-    const response = await fetch('backend/php/billing.php?action=patients');
+    const response = await fetch('../../backend/php/billing.php?action=patients');
     const result = await response.json();
     if (result.success) {
       patients = result.data || [];
@@ -188,7 +188,7 @@ async function createInvoice() {
     };
 
     try {
-      const response = await fetch('backend/php/billing.php?action=create', {
+      const response = await fetch('../../backend/php/billing.php?action=create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -209,7 +209,33 @@ async function createInvoice() {
   };
 }
 
+function setupAdminNavigation() {
+  const admin = JSON.parse(localStorage.getItem('admin') || 'null');
+  if (!admin) return; // Not an admin, show default nav
+
+  const permissions = admin.permissions || {};
+  const navMenu = document.getElementById('nav-menu');
+  if (!navMenu) return;
+
+  const navLinks = [];
+
+  // Show only relevant links based on permissions
+  if (permissions.manage_billing) {
+    navLinks.push('<li><a href="billing.html" class="active">Billing & Invoices</a></li>');
+    navLinks.push('<li><a href="reports.html">Financial Reports</a></li>');
+  }
+
+  navLinks.push('<li><a href="#" onclick="logout()">Logout</a></li>');
+  navMenu.innerHTML = navLinks.join('');
+}
+
+function logout() {
+  localStorage.removeItem('admin');
+  window.location.href = '../admin/admin-login.html';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  setupAdminNavigation();
   loadInvoices();
   loadPatients();
 });

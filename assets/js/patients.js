@@ -43,7 +43,7 @@ function showSuccessMessage(message) {
 
 // Dynamic patients list + appointments loader
 async function fetchPatients(limit = 100) {
-  const res = await fetch('backend/php/patients.php?limit=' + encodeURIComponent(limit));
+  const res = await fetch('../../backend/php/patients.php?limit=' + encodeURIComponent(limit));
   if (!res.ok) throw new Error('Failed to load patients');
   const json = await res.json();
   return json.patients || [];
@@ -232,7 +232,7 @@ function openPatientForm() {
     };
 
     try {
-      const response = await fetch('backend/php/patients.php', {
+      const response = await fetch('../../backend/php/patients.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -253,4 +253,33 @@ function openPatientForm() {
   };
 }
 
-document.addEventListener('DOMContentLoaded', renderPatients);
+function setupAdminNavigation() {
+  const admin = JSON.parse(localStorage.getItem('admin') || 'null');
+  if (!admin) return;
+
+  const permissions = admin.permissions || {};
+  const navMenu = document.getElementById('nav-menu');
+  if (!navMenu) return;
+
+  const navLinks = [];
+
+  if (permissions.manage_patients || permissions.manage_wards) {
+    navLinks.push('<li><a href="patients.html" class="active">Patients/Wards</a></li>');
+  }
+  if (permissions.manage_appointments) {
+    navLinks.push('<li><a href="appointments.html">Appointments</a></li>');
+  }
+
+  navLinks.push('<li><a href="#" onclick="logout()">Logout</a></li>');
+  navMenu.innerHTML = navLinks.join('');
+}
+
+function logout() {
+  localStorage.removeItem('admin');
+  window.location.href = '../admin/admin-login.html';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  setupAdminNavigation();
+  renderPatients();
+});

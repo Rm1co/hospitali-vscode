@@ -32,7 +32,16 @@ CREATE TABLE admins (
   id INT AUTO_INCREMENT PRIMARY KEY,
   username VARCHAR(100) UNIQUE NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  full_name VARCHAR(200),
+  email VARCHAR(255) UNIQUE,
+  role VARCHAR(50) NOT NULL DEFAULT 'HR Admin',
+  permissions JSON,
+  is_super_admin BOOLEAN DEFAULT FALSE,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_by INT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  last_login TIMESTAMP NULL,
+  FOREIGN KEY (created_by) REFERENCES admins(id) ON DELETE SET NULL
 );
 
 CREATE TABLE appointments (

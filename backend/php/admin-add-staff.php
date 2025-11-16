@@ -1,6 +1,7 @@
 <?php
 header('Content-Type: application/json');
 require_once 'DatabaseConnector.php';
+require_once 'EmailService.php';
 
 try {
     $db = DatabaseConnector::getInstance();
@@ -59,14 +60,31 @@ try {
         'is_activated' => 0
     ]);
     
+    // Send email notification to the new staff member
+    $fullName = $firstName . ' ' . $lastName;
+    $emailSent = false;
+    try {
+        $emailSent = EmailService::sendStaffCreationEmail(
+            $email,
+            $fullName,
+            $tempPassword,
+            $role,
+            $department,
+            $activationToken
+        );
+    } catch (Exception $emailError) {
+        error_log('Email sending error: ' . $emailError->getMessage());
+    }
+    
     http_response_code(201);
     echo json_encode([
         'success' => true,
-        'message' => 'Staff member added successfully',
+        'message' => 'Staff member added successfully' . ($emailSent ? ' and email sent' : ' (email notification failed)'),
         'staff_id' => $staffId,
         'email' => $email,
         'temp_password' => $tempPassword,
-        'activation_token' => $activationToken
+        'activation_token' => $activationToken,
+        'email_sent' => $emailSent
     ]);
     
 } catch (Exception $e) {

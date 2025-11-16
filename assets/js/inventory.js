@@ -58,7 +58,7 @@ function showSuccessMessage(message) {
 
 async function loadInventory() {
   try {
-    const response = await fetch('backend/php/inventory.php?action=list');
+    const response = await fetch('../../backend/php/inventory.php?action=list');
     const result = await response.json();
     if (result.success) {
       inventory = result.data || [];
@@ -86,23 +86,32 @@ function renderInventory() {
   const table = `<table>
     <thead>
       <tr>
-        <th>ID</th>
+        <th>#</th>
         <th>Item</th>
         <th>Quantity</th>
         <th>Unit</th>
         <th>Added</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
       ${inventory
         .map(
-          (i) => `
+          (i, index) => `
         <tr>
-          <td>${i.id}</td>
+          <td>${index + 1}</td>
           <td>${i.name}</td>
           <td>${i.quantity}</td>
           <td>${i.unit}</td>
           <td>${new Date(i.created_at).toLocaleDateString()}</td>
+          <td>
+            <button onclick="editItem(${
+              i.id
+            })" class="btn-edit" style="background:#4CAF50;color:white;padding:5px 10px;border:none;border-radius:4px;cursor:pointer;margin-right:5px;">Edit</button>
+            <button onclick="deleteItem(${
+              i.id
+            })" class="btn-delete" style="background:#f44336;color:white;padding:5px 10px;border:none;border-radius:4px;cursor:pointer;">Delete</button>
+          </td>
         </tr>
       `
         )
@@ -176,7 +185,7 @@ function addItem() {
     };
 
     try {
-      const response = await fetch('backend/php/inventory.php?action=add', {
+      const response = await fetch('../../backend/php/inventory.php?action=add', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -198,4 +207,126 @@ function addItem() {
   };
 }
 
-document.addEventListener('DOMContentLoaded', loadInventory);
+function editItem(id) {
+  const item = inventory.find((i) => i.id === id);
+  if (!item) {
+    alert('Item not found');
+    return;
+  }
+
+  const container = document.getElementById('inventoryTable');
+  const originalContent = container.innerHTML;
+
+  const cleanup = () => {
+    container.innerHTML = originalContent;
+    renderInventory();
+  };
+
+  const form = document.createElement('form');
+  form.innerHTML = `
+    <h3>Edit Inventory Item</h3>
+    <label>Item Name: <input name="name" value="${item.name}" required /></label><br/>
+    <label>Quantity: <input type="number" name="quantity" value="${item.quantity}" required /></label><br/>
+    <label>Unit: <input name="unit" value="${item.unit}" required /></label><br/>
+    <button type="submit">Update Item</button>
+    <button type="button" id="cancelBtn">Cancel</button>
+  `;
+  form.style.padding = '20px';
+  form.style.background = '#f9f9f9';
+  form.style.borderRadius = '8px';
+
+  container.innerHTML = '';
+  container.appendChild(form);
+
+  document.getElementById('cancelBtn').addEventListener('click', cleanup);
+
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    const data = {
+      id: id,
+      name: formData.get('name'),
+      quantity: parseInt(formData.get('quantity')),
+      unit: formData.get('unit'),
+    };
+
+    try {
+      const response = await fetch('../../backend/php/inventory.php?action=update', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        cleanup();
+        showSuccessMessage('Item updated successfully!');
+        await loadInventory();
+      } else {
+        alert('Error: ' + result.error);
+      }
+    } catch (error) {
+      console.error('Failed to update item:', error);
+      alert('Failed to update item');
+    }
+  };
+}
+
+async function deleteItem(id) {
+  const item = inventory.find((i) => i.id === id);
+  if (!item) {
+    alert('Item not found');
+    return;
+  }
+
+  if (!confirm(`Are you sure you want to delete "${item.name}"?`)) {
+    return;
+  }
+
+  try {
+    const response = await fetch('../../backend/php/inventory.php?action=delete', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: id }),
+    });
+
+    const result = await response.json();
+    if (result.success) {
+      showSuccessMessage('Item deleted successfully!');
+      await loadInventory();
+    } else {
+      alert('Error: ' + result.error);
+    }
+  } catch (error) {
+    console.error('Failed to delete item:', error);
+    alert('Failed to delete item');
+  }
+}
+
+function setupAdminNavigation() {
+  const admin = JSON.parse(localStorage.getItem('admin') || 'null');
+  if (!admin) return;
+
+  const permissions = admin.permissions || {};
+  const navMenu = document.getElementById('nav-menu');
+  if (!navMenu) return;
+
+  const navLinks = [];
+
+  if (permissions.manage_inventory || permissions.manage_pharmacy) {
+    navLinks.push('<li><a href="inventory.html" class="active">Inventory/Pharmacy</a></li>');
+  }
+
+  navLinks.push('<li><a href="#" onclick="logout()">Logout</a></li>');
+  navMenu.innerHTML = navLinks.join('');
+}
+
+function logout() {
+  localStorage.removeItem('admin');
+  window.location.href = '../admin/admin-login.html';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  setupAdminNavigation();
+  loadInventory();
+});

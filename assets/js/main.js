@@ -35,7 +35,7 @@ function savePatient(event) {
     return;
   }
 
-  fetch('backend/php/patients.php', {
+  fetch('../../backend/php/patients.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
