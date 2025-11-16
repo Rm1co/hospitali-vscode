@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab Admin Dashboard | StrathMedics Hospital</title>
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+  <style>
+    .notification {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      padding: 16px 24px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: slideIn 0.3s ease-out;
+      min-width: 300px;
+    }
+    .notification.success {
+      background: #d1fae5;
+      color: #065f46;
+      border-left: 4px solid #10b981;
+    }
+    .notification.error {
+      background: #fee2e2;
+      color: #991b1b;
+      border-left: 4px solid #ef4444;
+    }
+    .notification.info {
+      background: #dbeafe;
+      color: #1e40af;
+      border-left: 4px solid #3b82f6;
+    }
+    .notification i {
+      font-size: 24px;
+    }
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e5e7eb;
+      flex-wrap: wrap;
+    }
+    .tab {
+      padding: 12px 24px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      color: #6b7280;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+    }
+    .tab.active {
+      color: #2563eb;
+      border-bottom-color: #2563eb;
+      font-weight: 600;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .test-card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .test-card h4 {
+      margin: 0 0 12px 0;
+      color: #1f2937;
+    }
+    .test-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .info-item {
+      display: flex;
+      flex-direction: column;
+    }
+    .info-label {
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+    .info-value {
+      font-size: 14px;
+      color: #1f2937;
+      font-weight: 500;
+    }
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-block;
+    }
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .status-approved {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .status-rejected {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .btn-small {
+      padding: 6px 16px;
+      font-size: 14px;
+    }
+    .btn-approve {
+      background: #10b981;
+    }
+    .btn-approve:hover {
+      background: #059669;
+    }
+    .btn-reject {
+      background: #ef4444;
+    }
+    .btn-reject:hover {
+      background: #dc2626;
+    }
+    .btn-edit {
+      background: #3b82f6;
+    }
+    .btn-edit:hover {
+      background: #2563eb;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .stat-label {
+      color: #6b7280;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    .stat-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1f2937;
+    }
+    .staff-card {
+      background: white;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .staff-info h4 {
+      margin: 0 0 4px 0;
+    }
+    .staff-info p {
+      margin: 2px 0;
+      color: #6b7280;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">SM</div>
+        <div>
+          <h1>StrathMedics</h1>
+          <div class="small">Hospital Lab Admin</div>
+        </div>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="lab-admin-dashboard.html" class="active">Lab Management</a></li>
+          <li><a href="reports.html">Lab Reports</a></li>
+          <li><a href="#" onclick="logout()">Logout</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <h2>Lab Admin Dashboard</h2>
+        <div class="actions">
+          <div class="chip" id="admin-role">Lab Admin</div>
+          <div class="avatar" title="Lab Admin" id="admin-avatar">LA</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="tabs">
+          <button class="tab active" onclick="switchTab('overview')">Overview</button>
+          <button class="tab" onclick="switchTab('pending')">Pending Approvals</button>
+          <button class="tab" onclick="switchTab('all-tests')">All Lab Tests</button>
+          <button class="tab" onclick="switchTab('staff')">Lab Staff</button>
+          <button class="tab" onclick="switchTab('settings')">Lab Settings</button>
+        </div>
+
+        <!-- Overview Tab -->
+        <div id="overview-tab" class="tab-content active">
+          <h3>Laboratory Overview</h3>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-label">Pending Approvals</div>
+              <div class="stat-value" id="stat-pending">-</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Total Tests</div>
+              <div class="stat-value" id="stat-total">-</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Approved Tests</div>
+              <div class="stat-value" id="stat-approved">-</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Rejected Tests</div>
+              <div class="stat-value" id="stat-rejected">-</div>
+            </div>
+          </div>
+          
+          <h4 style="margin-top: 24px; color: #1f2937;">Your Permissions</h4>
+          <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb;">
+            <ul style="list-style: none; padding: 0; margin: 0;">
+              <li style="padding: 8px 0; border-bottom: 1px solid #f3f4f6;">
+                <i class='bx bx-check' style="color: #10b981; font-size: 20px;"></i>
+                <strong>Full access to all lab reports</strong>
+              </li>
+              <li style="padding: 8px 0; border-bottom: 1px solid #f3f4f6;">
+                <i class='bx bx-check' style="color: #10b981; font-size: 20px;"></i>
+                <strong>Edit or delete any lab results</strong>
+              </li>
+              <li style="padding: 8px 0; border-bottom: 1px solid #f3f4f6;">
+                <i class='bx bx-check' style="color: #10b981; font-size: 20px;"></i>
+                <strong>Approve or reject technicians' work</strong>
+              </li>
+              <li style="padding: 8px 0; border-bottom: 1px solid #f3f4f6;">
+                <i class='bx bx-check' style="color: #10b981; font-size: 20px;"></i>
+                <strong>Manage lab staff accounts</strong>
+              </li>
+              <li style="padding: 8px 0;">
+                <i class='bx bx-check' style="color: #10b981; font-size: 20px;"></i>
+                <strong>Configure lab settings</strong>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Pending Approvals Tab -->
+        <div id="pending-tab" class="tab-content">
+          <h3>Tests Pending Approval</h3>
+          <div id="pending-tests-list">
+            <div class="test-card">
+              <h4>Blood Test - Patient #1023</h4>
+              <div class="test-info">
+                <div class="info-item">
+                  <span class="info-label">Patient</span>
+                  <span class="info-value">John Doe</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Technician</span>
+                  <span class="info-value">Sarah Smith</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Submitted</span>
+                  <span class="info-value">${new Date().toLocaleDateString()}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Status</span>
+                  <span class="status-badge status-pending">Pending Review</span>
+                </div>
+              </div>
+              <p style="color: #6b7280; font-size: 14px;">Results: Normal blood count, no abnormalities detected.</p>
+              <div class="action-buttons">
+                <button class="btn btn-small btn-approve" onclick="approveTest(1023)">Approve</button>
+                <button class="btn btn-small btn-reject" onclick="rejectTest(1023)">Reject</button>
+                <button class="btn btn-small btn-edit" onclick="editTest(1023)">Edit</button>
+              </div>
+            </div>
+            <p style="color: #6b7280; font-size: 14px; margin-top: 16px;">
+              <i class='bx bx-info-circle'></i> This is sample data. Connect to backend to load real pending tests.
+            </p>
+          </div>
+        </div>
+
+        <!-- All Lab Tests Tab -->
+        <div id="all-tests-tab" class="tab-content">
+          <h3>All Laboratory Tests</h3>
+          <div id="all-tests-list">
+            <div class="test-card">
+              <h4>Urine Analysis - Patient #1015</h4>
+              <div class="test-info">
+                <div class="info-item">
+                  <span class="info-label">Date</span>
+                  <span class="info-value">${new Date().toLocaleDateString()}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Technician</span>
+                  <span class="info-value">Mike Johnson</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Status</span>
+                  <span class="status-badge status-approved">Approved</span>
+                </div>
+              </div>
+              <div class="action-buttons">
+                <button class="btn btn-small btn-edit" onclick="editTest(1015)">Edit</button>
+                <button class="btn btn-small" onclick="deleteTest(1015)" style="background: #6b7280;">Delete</button>
+              </div>
+            </div>
+            <p style="color: #6b7280; font-size: 14px; margin-top: 16px;">
+              <i class='bx bx-info-circle'></i> This is sample data. Connect to backend to load all tests.
+            </p>
+          </div>
+        </div>
+
+        <!-- Lab Staff Tab -->
+        <div id="staff-tab" class="tab-content">
+          <h3>Laboratory Staff Management</h3>
+          <p style="color: #6b7280; margin-bottom: 16px;">Manage lab technicians and staff accounts</p>
+          
+          <div id="staff-list">
+            <p style="color: #6b7280; text-align: center; padding: 20px;">
+              <i class='bx bx-loader-alt bx-spin'></i> Loading staff members...
+            </p>
+          </div>
+
+          <p style="color: #6b7280; font-size: 14px; margin-top: 16px;">
+            <i class='bx bx-info-circle'></i> Lab Technicians are added by HR Admin. You can view their performance metrics here.
+          </p>
+        </div>
+
+        <!-- Lab Settings Tab -->
+        <div id="settings-tab" class="tab-content">
+          <h3>Laboratory Settings</h3>
+          <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb;">
+            <h4>Test Types Configuration</h4>
+            <p style="color: #6b7280; margin-bottom: 16px;">Manage available lab test types</p>
+            
+            <div id="test-types-list">
+              <p style="text-align: center; color: #6b7280; padding: 20px;">
+                <i class='bx bx-loader-alt bx-spin'></i> Loading test types...
+              </p>
+            </div>
+            
+            <button class="btn" style="margin-top: 16px;" onclick="window.addNewTestType()">
+              <i class='bx bx-plus'></i> Add New Test Type
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Check authentication
+    const admin = JSON.parse(localStorage.getItem('admin') || 'null');
+    if (!admin || admin.role !== 'Lab Admin') {
+      window.location.href = 'admin-login.html';
+    }
+
+    // Display admin info
+    document.getElementById('admin-role').textContent = admin.role;
+    const initials = admin.full_name ? admin.full_name.split(' ').map(n => n[0]).join('').toUpperCase() : 'LA';
+    document.getElementById('admin-avatar').textContent = initials;
+    document.getElementById('admin-avatar').title = admin.full_name || admin.username;
+
+    // Notification system
+    function showNotification(message, type = 'success') {
+      // Remove any existing notifications
+      const existing = document.querySelector('.notification');
+      if (existing) existing.remove();
+      
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      
+      const icon = type === 'success' ? 'bx-check-circle' : type === 'error' ? 'bx-error-circle' : 'bx-info-circle';
+      notification.innerHTML = `
+        <i class='bx ${icon}'></i>
+        <span>${message}</span>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Auto-remove after 4 seconds
+      setTimeout(() => {
+        notification.style.animation = 'slideIn 0.3s ease-out reverse';
+        setTimeout(() => notification.remove(), 300);
+      }, 4000);
+    }
+
+    // Load data on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      loadStats();
+      loadPendingApprovals();
+      loadAllTests();
+      loadLabStaff();
+      loadTestTypes();
+    });
+
+    async function loadStats() {
+      try {
+        const response = await fetch('../../backend/php/lab-tests.php?action=list');
+        const result = await response.json();
+        
+        if (result.success) {
+          const tests = result.data || [];
+          const pendingCount = tests.filter(t => t.status === 'pending').length;
+          const approvedCount = tests.filter(t => t.status === 'approved').length;
+          const rejectedCount = tests.filter(t => t.status === 'rejected').length;
+          
+          document.getElementById('stat-pending').textContent = pendingCount;
+          document.getElementById('stat-total').textContent = tests.length;
+          document.getElementById('stat-approved').textContent = approvedCount;
+          document.getElementById('stat-rejected').textContent = rejectedCount;
+        }
+      } catch (error) {
+        console.error('Failed to load stats:', error);
+        document.getElementById('stat-pending').textContent = '0';
+        document.getElementById('stat-total').textContent = '0';
+        document.getElementById('stat-approved').textContent = '0';
+        document.getElementById('stat-rejected').textContent = '0';
+      }
+    }
+
+    async function loadPendingApprovals() {
+      try {
+        const response = await fetch('../../backend/php/lab-tests.php?action=pending');
+        const result = await response.json();
+        
+        console.log('Pending tests loaded:', result);
+        
+        if (result.success) {
+          const container = document.querySelector('#pending-tab');
+          
+          if (!container) {
+            console.error('Pending tab container not found!');
+            return;
+          }
+          
+          if (result.data.length === 0) {
+            container.innerHTML = '<h3>Pending Approvals</h3><p style="color: #6b7280;">No pending test results at this time.</p>';
+            return;
+          }
+          
+          let html = '<h3>Pending Approvals</h3>';
+          result.data.forEach(test => {
+            html += `
+              <div class="test-card">
+                <h4>${test.test_type} - ${test.patient_name}</h4>
+                <div class="test-info">
+                  <p><strong>Patient ID:</strong> ${test.patient_id}</p>
+                  <p><strong>Test ID:</strong> #${test.id}</p>
+                  <p><strong>Submitted by:</strong> ${test.technician_name}</p>
+                  <p><strong>Date:</strong> ${new Date(test.submitted_at).toLocaleString()}</p>
+                </div>
+                <div class="test-info" style="margin-top: 12px;">
+                  <p><strong>Results:</strong></p>
+                  <p style="color: #4b5563;">${test.results}</p>
+                  ${test.notes ? `<p style="margin-top: 8px;"><strong>Notes:</strong> ${test.notes}</p>` : ''}
+                </div>
+                <div class="test-actions">
+                  <button onclick="window.approveTest(${test.id})" class="btn" style="background: #10b981;">
+                    <i class='bx bx-check'></i> Approve
+                  </button>
+                  <button onclick="window.rejectTest(${test.id})" class="btn" style="background: #ef4444;">
+                    <i class='bx bx-x'></i> Reject
+                  </button>
+                  <button onclick="window.editTest(${test.id})" class="btn" style="background: #3b82f6;">
+                    <i class='bx bx-edit'></i> Edit
+                  </button>
+                </div>
+              </div>
+            `;
+          });
+          container.innerHTML = html;
+        }
+      } catch (error) {
+        console.error('Failed to load pending approvals:', error);
+      }
+    }
+
+    async function loadAllTests() {
+      try {
+        const response = await fetch('../../backend/php/lab-tests.php?action=list');
+        const result = await response.json();
+        
+        if (result.success) {
+          const container = document.querySelector('#all-tests-tab');
+          if (result.data.length === 0) {
+            container.innerHTML = '<h3>All Lab Tests</h3><p style="color: #6b7280;">No lab tests found.</p>';
+            return;
+          }
+          
+          let html = '<h3>All Lab Tests</h3>';
+          result.data.forEach(test => {
+            const statusColor = test.status === 'approved' ? '#10b981' : test.status === 'rejected' ? '#ef4444' : '#f59e0b';
+            html += `
+              <div class="test-card">
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                  <div>
+                    <h4>${test.test_type} - ${test.patient_name}</h4>
+                    <span class="status-badge" style="background: ${statusColor}20; color: ${statusColor};">
+                      ${test.status.toUpperCase()}
+                    </span>
+                  </div>
+                  <div class="test-actions">
+                    <button onclick="window.editTest(${test.id})" class="btn" style="background: #3b82f6; padding: 8px 16px;">
+                      <i class='bx bx-edit'></i> Edit
+                    </button>
+                    <button onclick="window.deleteTest(${test.id})" class="btn" style="background: #ef4444; padding: 8px 16px;">
+                      <i class='bx bx-trash'></i> Delete
+                    </button>
+                  </div>
+                </div>
+                <div class="test-info" style="margin-top: 12px;">
+                  <p><strong>Patient ID:</strong> ${test.patient_id} | <strong>Test ID:</strong> #${test.id}</p>
+                  <p><strong>Technician:</strong> ${test.technician_name}</p>
+                  <p><strong>Submitted:</strong> ${new Date(test.submitted_at).toLocaleString()}</p>
+                  ${test.reviewed_at ? `<p><strong>Reviewed:</strong> ${new Date(test.reviewed_at).toLocaleString()} by ${test.reviewer_name}</p>` : ''}
+                </div>
+                <div class="test-info" style="margin-top: 12px;">
+                  <p><strong>Results:</strong> ${test.results}</p>
+                  ${test.notes ? `<p><strong>Notes:</strong> ${test.notes}</p>` : ''}
+                  ${test.rejection_reason ? `<p style="color: #ef4444;"><strong>Rejection Reason:</strong> ${test.rejection_reason}</p>` : ''}
+                </div>
+              </div>
+            `;
+          });
+          container.innerHTML = html;
+        }
+      } catch (error) {
+        console.error('Failed to load all tests:', error);
+      }
+    }
+
+    async function loadLabStaff() {
+      try {
+        const response = await fetch('../../backend/php/staff.php?action=lab_technicians');
+        const result = await response.json();
+        
+        if (result.success) {
+          const container = document.getElementById('staff-list');
+          
+          if (result.data.length === 0) {
+            container.innerHTML = `
+              <div style="text-align: center; padding: 40px; color: #6b7280;">
+                <i class='bx bx-user-x' style="font-size: 48px; margin-bottom: 16px;"></i>
+                <p>No lab technicians found in the system.</p>
+                <p style="font-size: 14px; margin-top: 8px;">Lab Technicians are added by HR Admin.</p>
+              </div>
+            `;
+            return;
+          }
+          
+          let html = '';
+          result.data.forEach(staff => {
+            const approvalColor = staff.approval_rate >= 80 ? '#10b981' : staff.approval_rate >= 60 ? '#f59e0b' : '#ef4444';
+            
+            html += `
+              <div class="staff-card" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start;">
+                <div class="staff-info">
+                  <h4>${staff.full_name}</h4>
+                  <p><i class='bx bx-briefcase'></i> ${staff.role}</p>
+                  <p><i class='bx bx-envelope'></i> ${staff.email}</p>
+                  <p><i class='bx bx-phone'></i> ${staff.phone || 'N/A'}</p>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 12px;">
+                  <span class="status-badge status-approved">Active</span>
+                  <div style="background: #f9fafb; padding: 16px; border-radius: 8px; width: 100%;">
+                    <div style="text-align: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 2px solid #e5e7eb;">
+                      <div style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">Total Tests</div>
+                      <div style="font-size: 28px; font-weight: 700; color: #1f2937;">${staff.total_tests}</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; text-align: center;">
+                      <div>
+                        <div style="color: #10b981; font-weight: 700; font-size: 18px;">${staff.approved_tests}</div>
+                        <div style="color: #6b7280; font-size: 11px;">Approved</div>
+                      </div>
+                      <div>
+                        <div style="color: #f59e0b; font-weight: 700; font-size: 18px;">${staff.pending_tests}</div>
+                        <div style="color: #6b7280; font-size: 11px;">Pending</div>
+                      </div>
+                      <div>
+                        <div style="color: #ef4444; font-weight: 700; font-size: 18px;">${staff.rejected_tests}</div>
+                        <div style="color: #6b7280; font-size: 11px;">Rejected</div>
+                      </div>
+                    </div>
+                    <div style="border-top: 1px solid #e5e7eb; padding-top: 12px;">
+                      <div style="font-size: 12px; color: #6b7280; margin-bottom: 6px; text-align: center;">Approval Rate</div>
+                      <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="flex: 1; height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden;">
+                          <div style="height: 100%; background: ${approvalColor}; width: ${staff.approval_rate}%;"></div>
+                        </div>
+                        <span style="font-weight: 700; color: ${approvalColor}; font-size: 16px; min-width: 50px; text-align: right;">${staff.approval_rate}%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `;
+          });
+          
+          container.innerHTML = html;
+        }
+      } catch (error) {
+        console.error('Failed to load lab staff:', error);
+        const container = document.getElementById('staff-list');
+        container.innerHTML = `
+          <div style="text-align: center; padding: 40px; color: #ef4444;">
+            <i class='bx bx-error-circle' style="font-size: 48px; margin-bottom: 16px;"></i>
+            <p>Failed to load lab staff. Please try again.</p>
+          </div>
+        `;
+      }
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById(tab + '-tab').classList.add('active');
+      
+      // Reload data when switching to certain tabs
+      if (tab === 'overview') loadStats();
+      if (tab === 'pending') loadPendingApprovals();
+      if (tab === 'all-tests') loadAllTests();
+      if (tab === 'staff') loadLabStaff();
+      if (tab === 'settings') loadTestTypes();
+    }
+
+    window.approveTest = async function(testId) {
+      try {
+        const requestData = {
+          test_id: testId,
+          reviewer_id: admin.id
+        };
+        
+        showNotification('Processing approval...', 'info');
+        
+        const response = await fetch('../../backend/php/lab-tests.php?action=approve', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(requestData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          showNotification('✓ Test approved successfully!', 'success');
+          loadPendingApprovals();
+          loadAllTests();
+          loadStats();
+        } else {
+          showNotification('Failed to approve test: ' + result.message, 'error');
+        }
+      } catch (error) {
+        console.error('Error approving test:', error);
+        showNotification('Failed to approve test: ' + error.message, 'error');
+      }
+    }
+
+    window.rejectTest = async function(testId) {
+      const reason = prompt('Reason for rejection:');
+      if (!reason) return;
+      
+      try {
+        showNotification('Processing rejection...', 'info');
+        
+        const response = await fetch('../../backend/php/lab-tests.php?action=reject', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            test_id: testId,
+            reviewer_id: admin.id,
+            rejection_reason: reason
+          })
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+          showNotification('✓ Test rejected successfully!', 'success');
+          loadPendingApprovals();
+          loadAllTests();
+          loadStats();
+        } else {
+          showNotification('Failed to reject test: ' + result.message, 'error');
+        }
+      } catch (error) {
+        console.error('Error rejecting test:', error);
+        showNotification('Failed to reject test', 'error');
+      }
+    }
+
+    window.editTest = async function(testId) {
+      try {
+        // First, fetch the current test data
+        const response = await fetch('../../backend/php/lab-tests.php?action=list');
+        const result = await response.json();
+        
+        if (!result.success) {
+          showNotification('Failed to load test data', 'error');
+          return;
+        }
+        
+        const test = result.data.find(t => t.id === testId);
+        if (!test) {
+          showNotification('Test not found', 'error');
+          return;
+        }
+        
+        // Create edit form modal
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0,0,0,0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 2000;
+        `;
+        
+        modal.innerHTML = `
+          <div style="background: white; padding: 32px; border-radius: 12px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;">
+            <h3 style="margin-top: 0; color: #1f2937;">Edit Lab Test #${testId}</h3>
+            
+            <form id="edit-test-form">
+              <div style="margin-bottom: 16px;">
+                <label style="display: block; margin-bottom: 8px; color: #374151; font-weight: 500;">Patient</label>
+                <input type="text" value="${test.patient_name}" readonly style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; background: #f9fafb;">
+              </div>
+              
+              <div style="margin-bottom: 16px;">
+                <label style="display: block; margin-bottom: 8px; color: #374151; font-weight: 500;">Test Type</label>
+                <input type="text" value="${test.test_type}" readonly style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; background: #f9fafb;">
+              </div>
+              
+              <div style="margin-bottom: 16px;">
+                <label style="display: block; margin-bottom: 8px; color: #374151; font-weight: 500;">Technician</label>
+                <input type="text" value="${test.technician_name}" readonly style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; background: #f9fafb;">
+              </div>
+              
+              <div style="margin-bottom: 16px;">
+                <label style="display: block; margin-bottom: 8px; color: #374151; font-weight: 500;">Test Results *</label>
+                <textarea id="edit-results" rows="4" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-family: inherit;" required>${test.results}</textarea>
+              </div>
+              
+              <div style="margin-bottom: 24px;">
+                <label style="display: block; margin-bottom: 8px; color: #374151; font-weight: 500;">Additional Notes</label>
+                <textarea id="edit-notes" rows="3" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-family: inherit;">${test.notes || ''}</textarea>
+              </div>
+              
+              <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                <button type="button" onclick="this.closest('.modal-backdrop').remove()" class="btn" style="background: #6b7280;">
+                  Cancel
+                </button>
+                <button type="submit" class="btn" style="background: #3b82f6;">
+                  <i class='bx bx-save'></i> Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        `;
+        
+        modal.className = 'modal-backdrop';
+        document.body.appendChild(modal);
+        
+        // Handle form submission
+        document.getElementById('edit-test-form').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          
+          const newResults = document.getElementById('edit-results').value.trim();
+          const newNotes = document.getElementById('edit-notes').value.trim();
+          
+          if (!newResults) {
+            showNotification('Test results are required', 'error');
+            return;
+          }
+          
+          try {
+            showNotification('Updating test...', 'info');
+            
+            const updateResponse = await fetch('../../backend/php/lab-tests.php?action=update', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                test_id: testId,
+                results: newResults,
+                notes: newNotes
+              })
+            });
+            
+            const updateResult = await updateResponse.json();
+            if (updateResult.success) {
+              showNotification('✓ Test updated successfully!', 'success');
+              modal.remove();
+              loadPendingApprovals();
+              loadAllTests();
+              loadStats();
+            } else {
+              showNotification('Failed to update test: ' + updateResult.message, 'error');
+            }
+          } catch (error) {
+            console.error('Error updating test:', error);
+            showNotification('Failed to update test', 'error');
+          }
+        });
+        
+        // Close modal on backdrop click
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) {
+            modal.remove();
+          }
+        });
+        
+      } catch (error) {
+        console.error('Error loading test data:', error);
+        showNotification('Failed to load test data', 'error');
+      }
+    }
+
+    window.deleteTest = async function(testId) {
+      try {
+        // First, fetch the test data to show details in confirmation
+        const response = await fetch('../../backend/php/lab-tests.php?action=list');
+        const result = await response.json();
+        
+        if (!result.success) {
+          showNotification('Failed to load test data', 'error');
+          return;
+        }
+        
+        const test = result.data.find(t => t.id === testId);
+        if (!test) {
+          showNotification('Test not found', 'error');
+          return;
+        }
+        
+        // Create confirmation modal
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0,0,0,0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 2000;
+        `;
+        
+        modal.innerHTML = `
+          <div style="background: white; padding: 32px; border-radius: 12px; max-width: 500px; width: 90%;">
+            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
+              <div style="background: #fee2e2; color: #991b1b; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <i class='bx bx-trash' style="font-size: 24px;"></i>
+              </div>
+              <div>
+                <h3 style="margin: 0; color: #1f2937;">Delete Lab Test</h3>
+                <p style="margin: 4px 0 0 0; color: #6b7280; font-size: 14px;">This action cannot be undone</p>
+              </div>
+            </div>
+            
+            <div style="background: #f9fafb; padding: 16px; border-radius: 8px; margin-bottom: 24px; border-left: 3px solid #ef4444;">
+              <p style="margin: 0 0 8px 0; color: #374151;"><strong>Test ID:</strong> #${test.id}</p>
+              <p style="margin: 0 0 8px 0; color: #374151;"><strong>Patient:</strong> ${test.patient_name}</p>
+              <p style="margin: 0 0 8px 0; color: #374151;"><strong>Test Type:</strong> ${test.test_type}</p>
+              <p style="margin: 0 0 8px 0; color: #374151;"><strong>Status:</strong> <span style="text-transform: uppercase; color: ${test.status === 'approved' ? '#10b981' : test.status === 'rejected' ? '#ef4444' : '#f59e0b'};">${test.status}</span></p>
+              <p style="margin: 0; color: #374151;"><strong>Submitted:</strong> ${new Date(test.submitted_at).toLocaleString()}</p>
+            </div>
+            
+            <p style="color: #6b7280; font-size: 14px; margin-bottom: 24px;">
+              Are you sure you want to permanently delete this lab test? All test results, notes, and history will be removed from the system.
+            </p>
+            
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+              <button type="button" onclick="this.closest('.modal-backdrop').remove()" class="btn" style="background: #6b7280;">
+                Cancel
+              </button>
+              <button type="button" onclick="window.confirmDelete(${testId})" class="btn" style="background: #ef4444;">
+                <i class='bx bx-trash'></i> Delete Test
+              </button>
+            </div>
+          </div>
+        `;
+        
+        modal.className = 'modal-backdrop';
+        document.body.appendChild(modal);
+        
+        // Close modal on backdrop click
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) {
+            modal.remove();
+          }
+        });
+        
+      } catch (error) {
+        console.error('Error loading test data:', error);
+        showNotification('Failed to load test data', 'error');
+      }
+    }
+
+    window.confirmDelete = async function(testId) {
+      try {
+        showNotification('Deleting test...', 'info');
+        
+        const response = await fetch(`../../backend/php/lab-tests.php?action=delete&test_id=${testId}`, {
+          method: 'DELETE'
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+          showNotification('✓ Test deleted successfully!', 'success');
+          document.querySelector('.modal-backdrop')?.remove();
+          loadAllTests();
+          loadPendingApprovals();
+          loadStats();
+        } else {
+          showNotification('Failed to delete test: ' + result.message, 'error');
+        }
+      } catch (error) {
+        console.error('Error deleting test:', error);
+        showNotification('Failed to delete test', 'error');
+      }
+    }
+
+    async function loadTestTypes() {
+      try {
+        const response = await fetch('../../backend/php/lab-tests.php?action=test-types');
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+          const container = document.getElementById('test-types-list');
+          
+          if (result.data.length === 0) {
+            container.innerHTML = `
+              <p style="text-align: center; padding: 40px; color: #6b7280;">
+                <i class='bx bx-test-tube' style="font-size: 48px; margin-bottom: 16px;"></i>
+                <br>No test types configured yet. Click "Add New Test Type" to get started.
+              </p>
+            `;
+            return;
+          }
+          
+          let html = '<ul style="list-style: none; padding: 0; margin: 0;">';
+          result.data.forEach((testType, index) => {
+            const isLast = index === result.data.length - 1;
+            html += `
+              <li style="padding: 12px; ${!isLast ? 'border-bottom: 1px solid #f3f4f6;' : ''} display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <span style="font-weight: 500; color: #1f2937;">${testType.name}</span>
+                  ${testType.description ? `<p style="margin: 4px 0 0 0; font-size: 13px; color: #6b7280;">${testType.description}</p>` : ''}
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button class="btn btn-small" style="background: #3b82f6;" onclick="window.editTestType(${testType.id}, '${testType.name.replace(/'/g, "\\'")}')">
+                    <i class='bx bx-edit'></i> Edit
+                  </button>
+                  <button class="btn btn-small" style="background: #ef4444;" onclick="window.deleteTestType(${testType.id}, '${testType.name.replace(/'/g, "\\'")}')">
+                    <i class='bx bx-trash'></i> Delete
+                  </button>
+                </div>
+              </li>
+            `;
+          });
+          html += '</ul>';
+          container.innerHTML = html;
+        }
+      } catch (error) {
+        console.error('Failed to load test types:', error);
+        document.getElementById('test-types-list').innerHTML = `
+          <p style="text-align: center; padding: 40px; color: #ef4444;">
+            <i class='bx bx-error-circle' style="font-size: 48px; margin-bottom: 16px;"></i>
+            <br>Failed to load test types. Please try again.
+          </p>
+        `;
+      }
+    }
+
+    window.addNewTestType = function() {
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+      `;
+      
+      modal.innerHTML = `
+        <div style="background: white; padding: 32px; border-radius: 12px; max-width: 500px; width: 90%;">
+          <h3 style="margin-top: 0; color: #1f2937;">Add New Test Type</h3>
+          
+          <form id="add-test-type-form">
+            <div style="margin-bottom: 16px;">
+              <label style="display: block; margin-bottom: 8px; color: #374151; font-weight: 500;">Test Type Name *</label>
+              <input type="text" id="test-type-name" placeholder="e.g., MRI Scan" required style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;">
+            </div>
+            
+            <div style="margin-bottom: 24px;">
+              <label style="display: block; margin-bottom: 8px; color: #374151; font-weight: 500;">Description (Optional)</label>
+              <textarea id="test-type-description" rows="3" placeholder="Brief description of this test type..." style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-family: inherit;"></textarea>
+            </div>
+            
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+              <button type="button" onclick="this.closest('.modal-backdrop').remove()" class="btn" style="background: #6b7280;">
+                Cancel
+              </button>
+              <button type="submit" class="btn" style="background: #10b981;">
+                <i class='bx bx-plus'></i> Add Test Type
+              </button>
+            </div>
+          </form>
+        </div>
+      `;
+      
+      modal.className = 'modal-backdrop';
+      document.body.appendChild(modal);
+      
+      document.getElementById('add-test-type-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const name = document.getElementById('test-type-name').value.trim();
+        const description = document.getElementById('test-type-description').value.trim();
+        
+        if (!name) {
+          showNotification('Test type name is required', 'error');
+          return;
+        }
+        
+        try {
+          showNotification('Adding test type...', 'info');
+          
+          const response = await fetch('../../backend/php/lab-tests.php?action=add-test-type', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, description })
+          });
+          
+          const result = await response.json();
+          if (result.success) {
+            showNotification('✓ Test type added successfully!', 'success');
+            modal.remove();
+            loadTestTypes();
+          } else {
+            showNotification('Failed to add test type: ' + result.message, 'error');
+          }
+        } catch (error) {
+          console.error('Error adding test type:', error);
+          showNotification('Failed to add test type', 'error');
+        }
+      });
+      
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+      });
+    }
+
+    window.editTestType = function(id, currentName) {
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+      `;
+      
+      modal.innerHTML = `
+        <div style="background: white; padding: 32px; border-radius: 12px; max-width: 500px; width: 90%;">
+          <h3 style="margin-top: 0; color: #1f2937;">Edit Test Type</h3>
+          
+          <form id="edit-test-type-form">
+            <div style="margin-bottom: 16px;">
+              <label style="display: block; margin-bottom: 8px; color: #374151; font-weight: 500;">Test Type Name *</label>
+              <input type="text" id="edit-test-type-name" value="${currentName}" required style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px;">
+            </div>
+            
+            <div style="margin-bottom: 24px;">
+              <label style="display: block; margin-bottom: 8px; color: #374151; font-weight: 500;">Description (Optional)</label>
+              <textarea id="edit-test-type-description" rows="3" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-family: inherit;"></textarea>
+            </div>
+            
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+              <button type="button" onclick="this.closest('.modal-backdrop').remove()" class="btn" style="background: #6b7280;">
+                Cancel
+              </button>
+              <button type="submit" class="btn" style="background: #3b82f6;">
+                <i class='bx bx-save'></i> Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
+      `;
+      
+      modal.className = 'modal-backdrop';
+      document.body.appendChild(modal);
+      
+      document.getElementById('edit-test-type-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const name = document.getElementById('edit-test-type-name').value.trim();
+        const description = document.getElementById('edit-test-type-description').value.trim();
+        
+        if (!name) {
+          showNotification('Test type name is required', 'error');
+          return;
+        }
+        
+        try {
+          showNotification('Updating test type...', 'info');
+          
+          const response = await fetch('../../backend/php/lab-tests.php?action=update-test-type', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, name, description })
+          });
+          
+          const result = await response.json();
+          if (result.success) {
+            showNotification('✓ Test type updated successfully!', 'success');
+            modal.remove();
+            loadTestTypes();
+          } else {
+            showNotification('Failed to update test type: ' + result.message, 'error');
+          }
+        } catch (error) {
+          console.error('Error updating test type:', error);
+          showNotification('Failed to update test type', 'error');
+        }
+      });
+      
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+      });
+    }
+
+    window.deleteTestType = function(id, name) {
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+      `;
+      
+      modal.innerHTML = `
+        <div style="background: white; padding: 32px; border-radius: 12px; max-width: 500px; width: 90%;">
+          <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
+            <div style="background: #fee2e2; color: #991b1b; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+              <i class='bx bx-trash' style="font-size: 24px;"></i>
+            </div>
+            <div>
+              <h3 style="margin: 0; color: #1f2937;">Delete Test Type</h3>
+              <p style="margin: 4px 0 0 0; color: #6b7280; font-size: 14px;">This action cannot be undone</p>
+            </div>
+          </div>
+          
+          <div style="background: #f9fafb; padding: 16px; border-radius: 8px; margin-bottom: 24px; border-left: 3px solid #ef4444;">
+            <p style="margin: 0; color: #374151;"><strong>Test Type:</strong> ${name}</p>
+          </div>
+          
+          <p style="color: #6b7280; font-size: 14px; margin-bottom: 24px;">
+            Are you sure you want to delete this test type? This may affect existing lab tests.
+          </p>
+          
+          <div style="display: flex; gap: 12px; justify-content: flex-end;">
+            <button type="button" onclick="this.closest('.modal-backdrop').remove()" class="btn" style="background: #6b7280;">
+              Cancel
+            </button>
+            <button type="button" onclick="window.confirmDeleteTestType(${id})" class="btn" style="background: #ef4444;">
+              <i class='bx bx-trash'></i> Delete Test Type
+            </button>
+          </div>
+        </div>
+      `;
+      
+      modal.className = 'modal-backdrop';
+      document.body.appendChild(modal);
+      
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+      });
+    }
+
+    window.confirmDeleteTestType = async function(id) {
+      try {
+        showNotification('Deleting test type...', 'info');
+        
+        const response = await fetch(`../../backend/php/lab-tests.php?action=delete-test-type&id=${id}`, {
+          method: 'DELETE'
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+          showNotification('✓ Test type deleted successfully!', 'success');
+          document.querySelector('.modal-backdrop')?.remove();
+          loadTestTypes();
+        } else {
+          showNotification('Failed to delete test type: ' + result.message, 'error');
+        }
+      } catch (error) {
+        console.error('Error deleting test type:', error);
+        showNotification('Failed to delete test type', 'error');
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('admin');
+      window.location.href = 'admin-login.html';
+    }
+  </script>
+</body>
+</html>

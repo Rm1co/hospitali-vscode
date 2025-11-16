@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin System Setup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f3f4f6;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+        .description {
+            color: #6b7280;
+            margin-bottom: 30px;
+        }
+        .step {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3b82f6;
+        }
+        .step h3 {
+            margin-top: 0;
+            color: #1f2937;
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+        .warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
+        button {
+            padding: 12px 24px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+        .code {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .credentials-box {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .credentials-box h4 {
+            margin-top: 0;
+            color: #92400e;
+        }
+        .credential-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+        }
+        .progress {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #3b82f6;
+            width: 0%;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 Admin System Setup</h1>
+        <p class="description">This wizard will set up the hierarchical admin system for Tel Aviv Hospital. Follow the steps below to configure the database and create your Super Admin account.</p>
+        
+        <div class="progress">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <div class="step">
+            <h3>Step 1: Update Admins Table Structure</h3>
+            <p>Add role-based permissions and hierarchy support to the admins table.</p>
+            <button onclick="updateAdminsTable()">Update Admins Table</button>
+            <div id="step1-result"></div>
+        </div>
+
+        <div class="step">
+            <h3>Step 2: Verify/Create Super Admin</h3>
+            <p>Create or verify the default Super Admin account.</p>
+            <button onclick="createSuperAdmin()" id="step2-btn" disabled>Create Super Admin</button>
+            <div id="step2-result"></div>
+        </div>
+
+        <div class="credentials-box" id="credentials-box" style="display: none;">
+            <h4>🔐 Super Admin Credentials</h4>
+            <p><strong>IMPORTANT:</strong> Save these credentials securely. You'll need them to log in.</p>
+            <div class="credential-row">
+                <span><strong>Username:</strong> <span id="cred-username">admin</span></span>
+            </div>
+            <div class="credential-row">
+                <span><strong>Password:</strong> <span id="cred-password">Admin@123</span></span>
+            </div>
+            <div class="credential-row">
+                <span><strong>Role:</strong> <span style="color: #92400e; font-weight: 600;">Super Admin</span></span>
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>Step 3: Login & Configure</h3>
+            <p>Use your Super Admin credentials to log in and start creating other admin accounts.</p>
+            <button onclick="goToLogin()" id="step3-btn" disabled>Go to Admin Login</button>
+        </div>
+
+        <div style="margin-top: 30px; padding: 20px; background: #eff6ff; border-radius: 8px;">
+            <h4 style="margin-top: 0; color: #1e40af;">📋 Admin Roles & Permissions</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px;">
+                <div style="background: white; padding: 15px; border-radius: 6px;">
+                    <strong style="color: #92400e;">Super Admin</strong>
+                    <p style="font-size: 13px; color: #6b7280; margin: 5px 0 0 0;">Full system control, manage all admins, system settings, backups</p>
+                </div>
+                <div style="background: white; padding: 15px; border-radius: 6px;">
+                    <strong style="color: #1e40af;">HR Admin</strong>
+                    <p style="font-size: 13px; color: #6b7280; margin: 5px 0 0 0;">Manage staff, departments, staff reports</p>
+                </div>
+                <div style="background: white; padding: 15px; border-radius: 6px;">
+                    <strong style="color: #4338ca;">Reception Admin</strong>
+                    <p style="font-size: 13px; color: #6b7280; margin: 5px 0 0 0;">Manage patients, appointments, patient reports</p>
+                </div>
+                <div style="background: white; padding: 15px; border-radius: 6px;">
+                    <strong style="color: #065f46;">Finance Admin</strong>
+                    <p style="font-size: 13px; color: #6b7280; margin: 5px 0 0 0;">Manage billing, invoices, financial reports</p>
+                </div>
+                <div style="background: white; padding: 15px; border-radius: 6px;">
+                    <strong style="color: #9f1239;">Pharmacy Admin</strong>
+                    <p style="font-size: 13px; color: #6b7280; margin: 5px 0 0 0;">Manage pharmacy, inventory, pharmacy reports</p>
+                </div>
+                <div style="background: white; padding: 15px; border-radius: 6px;">
+                    <strong style="color: #075985;">Lab Admin</strong>
+                    <p style="font-size: 13px; color: #6b7280; margin: 5px 0 0 0;">Manage lab, tests, lab reports</p>
+                </div>
+                <div style="background: white; padding: 15px; border-radius: 6px;">
+                    <strong style="color: #854d0e;">Ward Admin</strong>
+                    <p style="font-size: 13px; color: #6b7280; margin: 5px 0 0 0;">Manage wards, beds, ward reports</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 0;
+
+        async function updateAdminsTable() {
+            const resultDiv = document.getElementById('step1-result');
+            const btn = event.target;
+            resultDiv.innerHTML = '<p>Updating admins table structure...</p>';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('../../backend/php/update-admins-table.php');
+                const data = await response.json();
+
+                if (data.success) {
+                    resultDiv.innerHTML = `<div class="status success">✓ ${data.message}</div>`;
+                    updateProgress(33);
+                    document.getElementById('step2-btn').disabled = false;
+                    currentStep = 1;
+                } else {
+                    resultDiv.innerHTML = `<div class="status error">✗ Error: ${data.message}</div>`;
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="status error">✗ Network error: ${error.message}</div>`;
+                btn.disabled = false;
+            }
+        }
+
+        async function createSuperAdmin() {
+            const resultDiv = document.getElementById('step2-result');
+            const btn = event.target;
+            resultDiv.innerHTML = '<p>Creating/verifying Super Admin account...</p>';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('../../backend/php/create-default-admin.php');
+                const data = await response.json();
+
+                if (data.success) {
+                    resultDiv.innerHTML = `<div class="status success">✓ ${data.message}</div>`;
+                    document.getElementById('credentials-box').style.display = 'block';
+                    updateProgress(66);
+                    document.getElementById('step3-btn').disabled = false;
+                    currentStep = 2;
+                } else {
+                    resultDiv.innerHTML = `<div class="status warning">⚠ ${data.message}</div>`;
+                    document.getElementById('credentials-box').style.display = 'block';
+                    updateProgress(66);
+                    document.getElementById('step3-btn').disabled = false;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="status error">✗ Network error: ${error.message}</div>`;
+                btn.disabled = false;
+            }
+        }
+
+        function goToLogin() {
+            updateProgress(100);
+            setTimeout(() => {
+                window.location.href = 'admin-login.html';
+            }, 500);
+        }
+
+        function updateProgress(percent) {
+            document.getElementById('progress-bar').style.width = percent + '%';
+        }
+    </script>
+</body>
+</html>

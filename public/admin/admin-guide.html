@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin System Guide | Tel Aviv Hospital</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f3f4f6;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0 0 10px 0;
+        }
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .card h3 {
+            margin-top: 0;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .icon {
+            font-size: 24px;
+        }
+        .role-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 4px;
+        }
+        .role-super { background: #fef3c7; color: #92400e; }
+        .role-hr { background: #dbeafe; color: #1e40af; }
+        .role-reception { background: #e0e7ff; color: #4338ca; }
+        .role-finance { background: #d1fae5; color: #065f46; }
+        .role-pharmacy { background: #fce7f3; color: #9f1239; }
+        .role-lab { background: #e0f2fe; color: #075985; }
+        .role-ward { background: #fef9c3; color: #854d0e; }
+        .permission-list {
+            list-style: none;
+            padding: 0;
+        }
+        .permission-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .permission-list li:last-child {
+            border-bottom: none;
+        }
+        .permission-list li:before {
+            content: "✓ ";
+            color: #10b981;
+            font-weight: bold;
+        }
+        .quick-links {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .quick-links h3 {
+            margin-top: 0;
+            color: #1f2937;
+        }
+        .link-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .link-btn {
+            display: block;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .link-btn:hover {
+            transform: translateY(-2px);
+        }
+        .setup-btn {
+            background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+        }
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .warning-box strong {
+            color: #92400e;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .check { color: #10b981; font-weight: bold; }
+        .cross { color: #ef4444; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏥 Tel Aviv Hospital Admin System</h1>
+        <p>Complete guide to the hierarchical admin management system</p>
+    </div>
+
+    <div class="warning-box">
+        <strong>⚠️ First Time Setup Required:</strong> If this is your first time, please run the setup wizard first to initialize the admin system.
+    </div>
+
+    <div class="quick-links">
+        <h3>🚀 Quick Links</h3>
+        <div class="link-grid">
+            <a href="setup-admin-system.html" class="link-btn setup-btn">
+                <div style="font-size: 24px; margin-bottom: 5px;">⚙️</div>
+                Setup Wizard
+            </a>
+            <a href="admin-login.html" class="link-btn">
+                <div style="font-size: 24px; margin-bottom: 5px;">🔐</div>
+                Admin Login
+            </a>
+            <a href="super-admin-panel.html" class="link-btn">
+                <div style="font-size: 24px; margin-bottom: 5px;">👑</div>
+                Super Admin Panel
+            </a>
+            <a href="admin-panel.html" class="link-btn">
+                <div style="font-size: 24px; margin-bottom: 5px;">👥</div>
+                Staff Management
+            </a>
+        </div>
+    </div>
+
+    <h2 style="margin-top: 40px; color: #1f2937;">Admin Roles & Permissions</h2>
+
+    <div class="grid">
+        <div class="card">
+            <h3><span class="icon">👑</span> Super Admin</h3>
+            <span class="role-tag role-super">FULL CONTROL</span>
+            <ul class="permission-list">
+                <li>Manage all admins</li>
+                <li>System settings</li>
+                <li>All departments access</li>
+                <li>Generate all reports</li>
+                <li>Backup & restore</li>
+                <li>User role management</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">👔</span> HR Admin</h3>
+            <span class="role-tag role-hr">STAFF MANAGEMENT</span>
+            <ul class="permission-list">
+                <li>Manage staff accounts</li>
+                <li>View staff reports</li>
+                <li>Manage departments</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">📋</span> Reception Admin</h3>
+            <span class="role-tag role-reception">PATIENT & APPOINTMENTS</span>
+            <ul class="permission-list">
+                <li>Manage patients</li>
+                <li>Manage appointments</li>
+                <li>View patient reports</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">💰</span> Finance Admin</h3>
+            <span class="role-tag role-finance">BILLING & FINANCE</span>
+            <ul class="permission-list">
+                <li>Manage billing</li>
+                <li>View financial reports</li>
+                <li>Manage invoices</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">💊</span> Pharmacy Admin</h3>
+            <span class="role-tag role-pharmacy">PHARMACY</span>
+            <ul class="permission-list">
+                <li>Manage pharmacy</li>
+                <li>Pharmacy inventory</li>
+                <li>Pharmacy reports</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">🔬</span> Lab Admin</h3>
+            <span class="role-tag role-lab">LABORATORY</span>
+            <ul class="permission-list">
+                <li>Full access to all lab reports</li>
+                <li>Edit or delete any lab results</li>
+                <li>Approve or reject technicians' work</li>
+                <li>Manage lab staff accounts</li>
+                <li>Configure lab settings</li>
+            </ul>
+            <p style="margin-top: 12px; padding: 8px; background: #fef3c7; border-radius: 4px; font-size: 13px; color: #92400e;">
+                <strong>Note:</strong> Lab Technicians are added as staff members by HR Admin, not as admin accounts.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">🏥</span> Ward/Maternity Admin</h3>
+            <span class="role-tag role-ward">WARDS & BEDS</span>
+            <ul class="permission-list">
+                <li>Manage wards</li>
+                <li>Manage bed assignments</li>
+                <li>View ward reports</li>
+            </ul>
+        </div>
+    </div>
+
+    <h2 style="margin-top: 40px; color: #1f2937;">Permission Matrix</h2>
+    <div style="overflow-x: auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Permission</th>
+                    <th>Super</th>
+                    <th>HR</th>
+                    <th>Reception</th>
+                    <th>Finance</th>
+                    <th>Pharmacy</th>
+                    <th>Lab</th>
+                    <th>Ward</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Manage Admins</td>
+                    <td class="check">✓</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                </tr>
+                <tr>
+                    <td>Manage Staff</td>
+                    <td class="check">✓</td>
+                    <td class="check">✓</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                </tr>
+                <tr>
+                    <td>Manage Patients</td>
+                    <td class="check">✓</td>
+                    <td class="cross">✗</td>
+                    <td class="check">✓</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                </tr>
+                <tr>
+                    <td>Manage Appointments</td>
+                    <td class="check">✓</td>
+                    <td class="cross">✗</td>
+                    <td class="check">✓</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                </tr>
+                <tr>
+                    <td>Manage Billing</td>
+                    <td class="check">✓</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="check">✓</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                </tr>
+                <tr>
+                    <td>Manage Pharmacy</td>
+                    <td class="check">✓</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="check">✓</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                </tr>
+                <tr>
+                    <td>Manage Lab</td>
+                    <td class="check">✓</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="check">✓</td>
+                    <td class="cross">✗</td>
+                </tr>
+                <tr>
+                    <td>Manage Wards</td>
+                    <td class="check">✓</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="check">✓</td>
+                </tr>
+                <tr>
+                    <td>All Reports</td>
+                    <td class="check">✓</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                </tr>
+                <tr>
+                    <td>System Settings</td>
+                    <td class="check">✓</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                    <td class="cross">✗</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card" style="margin-top: 30px;">
+        <h3>📚 Getting Started</h3>
+        <ol>
+            <li><strong>First Time Setup:</strong> Run <a href="setup-admin-system.html">setup-admin-system.html</a> to initialize the database</li>
+            <li><strong>Login:</strong> Use the default Super Admin credentials (admin / Admin@123)</li>
+            <li><strong>Change Password:</strong> Immediately change the default password for security</li>
+            <li><strong>Create Admins:</strong> Create additional admin accounts with appropriate roles</li>
+            <li><strong>Manage Staff:</strong> Use staff management to add doctors, nurses, and other hospital staff</li>
+        </ol>
+    </div>
+
+    <div class="card" style="margin-top: 20px;">
+        <h3>🔐 Security Best Practices</h3>
+        <ul class="permission-list">
+            <li>Change default Super Admin password immediately</li>
+            <li>Use strong passwords (minimum 8 characters)</li>
+            <li>Create specific accounts for each administrator</li>
+            <li>Assign minimum necessary permissions</li>
+            <li>Deactivate accounts when staff leaves</li>
+            <li>Review admin activity regularly</li>
+        </ul>
+    </div>
+
+    <footer style="text-align: center; margin-top: 40px; padding: 20px; color: #6b7280;">
+        <p>Tel Aviv Hospital Management System © 2025</p>
+        <p style="font-size: 14px;">For technical support, contact your system administrator</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab Technician Dashboard | StrathMedics Hospital</title>
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+  <style>
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+    .tab {
+      padding: 12px 24px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      color: #6b7280;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+    }
+    .tab.active {
+      color: #2563eb;
+      border-bottom-color: #2563eb;
+      font-weight: 600;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .test-card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .test-card h4 {
+      margin: 0 0 12px 0;
+      color: #1f2937;
+    }
+    .test-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .info-item {
+      display: flex;
+      flex-direction: column;
+    }
+    .info-label {
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+    .info-value {
+      font-size: 14px;
+      color: #1f2937;
+      font-weight: 500;
+    }
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-block;
+    }
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .status-completed {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .status-approved {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: #374151;
+    }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    .permission-notice {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 12px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      font-size: 14px;
+      color: #92400e;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">SM</div>
+        <div>
+          <h1>StrathMedics</h1>
+          <div class="small">Hospital Labs</div>
+        </div>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="#" class="active">My Assigned Tests</a></li>
+          <li><a href="#" onclick="logout()">Logout</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <h2>Lab Technician Dashboard</h2>
+        <div class="actions">
+          <div class="chip" id="staff-name">Lab Technician</div>
+          <div class="avatar" title="Lab Technician" id="staff-avatar">LT</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="tabs">
+          <button class="tab active" onclick="switchTab('assigned')">Assigned Tests</button>
+          <button class="tab" onclick="switchTab('add')">Add Test Results</button>
+          <button class="tab" onclick="switchTab('my-work')">My Submitted Tests</button>
+        </div>
+
+        <!-- Assigned Tests Tab -->
+        <div id="assigned-tab" class="tab-content active">
+          <h3>Tests Assigned to Me</h3>
+          <div id="assigned-tests-list">
+            <p>Loading assigned tests...</p>
+          </div>
+        </div>
+
+        <!-- Add Test Results Tab -->
+        <div id="add-tab" class="tab-content">
+          <h3>Add New Test Results</h3>
+          <form id="add-test-form">
+            <div class="form-group">
+              <label>Patient *</label>
+              <select id="patient-id" required>
+                <option value="">Loading patients...</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Test Type *</label>
+              <select id="test-type" required>
+                <option value="">Select Test Type</option>
+                <option value="Blood Test">Blood Test</option>
+                <option value="Urine Analysis">Urine Analysis</option>
+                <option value="X-Ray">X-Ray</option>
+                <option value="CT Scan">CT Scan</option>
+                <option value="MRI">MRI</option>
+                <option value="Ultrasound">Ultrasound</option>
+                <option value="ECG">ECG</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Test Results *</label>
+              <textarea id="test-results" required placeholder="Enter detailed test results..."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Notes/Observations</label>
+              <textarea id="test-notes" placeholder="Additional notes or observations..."></textarea>
+            </div>
+
+            <button type="submit" class="btn">Submit Test Results</button>
+            <p class="error" id="error-msg" style="color: #dc2626; margin-top: 10px;"></p>
+            <p class="success" id="success-msg" style="color: #10b981; margin-top: 10px;"></p>
+          </form>
+        </div>
+
+        <!-- My Submitted Tests Tab -->
+        <div id="my-work-tab" class="tab-content">
+          <h3>My Submitted Test Results</h3>
+          <div id="my-tests-list">
+            <p>Loading your submitted tests...</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Check authentication
+    const staff = JSON.parse(localStorage.getItem('staff') || 'null');
+    if (!staff || staff.role !== 'Lab Technician') {
+      window.location.href = 'staff-login.html';
+    }
+
+    // Display staff info
+    document.getElementById('staff-name').textContent = staff.name || 'Lab Technician';
+    const initials = staff.name ? staff.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'LT';
+    document.getElementById('staff-avatar').textContent = initials;
+    document.getElementById('staff-avatar').title = staff.name || 'Lab Technician';
+
+    // Load patients for the dropdown
+    async function loadPatients() {
+      try {
+        const response = await fetch('../../backend/php/patients.php?action=list');
+        const result = await response.json();
+        
+        console.log('Patients loaded:', result);
+        
+        if (result.patients && result.patients.length > 0) {
+          const select = document.getElementById('patient-id');
+          select.innerHTML = '<option value="">Select Patient</option>';
+          
+          result.patients.forEach(patient => {
+            const option = document.createElement('option');
+            option.value = patient.id;
+            option.textContent = `${patient.first_name} ${patient.last_name} (ID: ${patient.id})`;
+            select.appendChild(option);
+          });
+        } else {
+          document.getElementById('patient-id').innerHTML = '<option value="">No patients available</option>';
+        }
+      } catch (error) {
+        console.error('Failed to load patients:', error);
+        document.getElementById('patient-id').innerHTML = '<option value="">Failed to load patients</option>';
+      }
+    }
+
+    // Load patients on page load
+    loadPatients();
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById(tab + '-tab').classList.add('active');
+
+      if (tab === 'assigned') loadAssignedTests();
+      if (tab === 'my-work') loadMyTests();
+    }
+
+    function loadAssignedTests() {
+      const container = document.getElementById('assigned-tests-list');
+      
+      // Placeholder - would connect to backend
+      container.innerHTML = `
+        <div class="test-card">
+          <h4>Blood Test - Patient #1023</h4>
+          <div class="test-info">
+            <div class="info-item">
+              <span class="info-label">Patient Name</span>
+              <span class="info-value">John Doe</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Test Type</span>
+              <span class="info-value">Blood Test</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Assigned Date</span>
+              <span class="info-value">${new Date().toLocaleDateString()}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Status</span>
+              <span class="status-badge status-pending">Pending</span>
+            </div>
+          </div>
+          <button class="btn" onclick="fillTestForm(1023, 'Blood Test')">Add Results</button>
+        </div>
+        <p style="color: #6b7280; font-size: 14px; margin-top: 16px;">
+          <i class='bx bx-info-circle'></i> This is sample data. Connect to backend to load real assigned tests.
+        </p>
+      `;
+    }
+
+    async function loadMyTests() {
+      const container = document.getElementById('my-tests-list');
+      container.innerHTML = '<p>Loading your submitted tests...</p>';
+      
+      try {
+        const response = await fetch(`../../backend/php/lab-tests.php?action=submitted&technician_id=${staff.id}`);
+        const result = await response.json();
+        
+        if (result.success) {
+          if (result.data.length === 0) {
+            container.innerHTML = '<p style="color: #6b7280;">You haven\'t submitted any test results yet.</p>';
+            return;
+          }
+          
+          let html = '';
+          result.data.forEach(test => {
+            const statusText = test.status === 'approved' ? 'Approved' : test.status === 'rejected' ? 'Rejected' : 'Awaiting Approval';
+            const statusClass = test.status === 'approved' ? 'status-completed' : test.status === 'rejected' ? 'status-cancelled' : 'status-pending';
+            
+            html += `
+              <div class="test-card">
+                <h4>${test.test_type} - ${test.patient_name}</h4>
+                <div class="test-info">
+                  <div class="info-item">
+                    <span class="info-label">Patient ID</span>
+                    <span class="info-value">#${test.patient_id}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-label">Submitted Date</span>
+                    <span class="info-value">${new Date(test.submitted_at).toLocaleDateString()}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-label">Status</span>
+                    <span class="status-badge ${statusClass}">${statusText}</span>
+                  </div>
+                  ${test.reviewed_at ? `
+                  <div class="info-item">
+                    <span class="info-label">Reviewed</span>
+                    <span class="info-value">${new Date(test.reviewed_at).toLocaleDateString()} by ${test.reviewer_name}</span>
+                  </div>
+                  ` : ''}
+                </div>
+                <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb;">
+                  <p style="color: #4b5563; font-size: 14px;"><strong>Results:</strong> ${test.results}</p>
+                  ${test.notes ? `<p style="color: #6b7280; font-size: 14px; margin-top: 8px;"><strong>Notes:</strong> ${test.notes}</p>` : ''}
+                  ${test.rejection_reason ? `<p style="color: #ef4444; font-size: 14px; margin-top: 8px;"><strong>Rejection Reason:</strong> ${test.rejection_reason}</p>` : ''}
+                </div>
+              </div>
+            `;
+          });
+          container.innerHTML = html;
+        } else {
+          container.innerHTML = '<p style="color: #ef4444;">Failed to load your submitted tests.</p>';
+        }
+      } catch (error) {
+        console.error('Failed to load submitted tests:', error);
+        container.innerHTML = '<p style="color: #ef4444;">Error loading submitted tests.</p>';
+      }
+    }
+
+    function fillTestForm(patientId, testType) {
+      switchTab('add');
+      document.getElementById('patient-id').value = patientId;
+      document.getElementById('test-type').value = testType;
+    }
+
+    document.getElementById('add-test-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const errorMsg = document.getElementById('error-msg');
+      const successMsg = document.getElementById('success-msg');
+      const btn = document.querySelector('button[type="submit"]');
+      
+      errorMsg.textContent = '';
+      successMsg.textContent = '';
+
+      // Validate staff ID
+      if (!staff || !staff.id) {
+        errorMsg.textContent = 'Session error. Please log in again.';
+        setTimeout(() => window.location.href = 'staff-login.html', 2000);
+        return;
+      }
+
+      const patientId = parseInt(document.getElementById('patient-id').value);
+      const testType = document.getElementById('test-type').value;
+      const results = document.getElementById('test-results').value;
+      const notes = document.getElementById('test-notes').value;
+
+      // Validate form fields
+      if (!patientId || !testType || !results) {
+        errorMsg.textContent = 'Please fill in all required fields.';
+        return;
+      }
+
+      const data = {
+        patient_id: patientId,
+        test_type: testType,
+        results: results,
+        notes: notes,
+        technician_id: staff.id
+      };
+
+      console.log('Submitting test data:', data);
+
+      try {
+        btn.disabled = true;
+        btn.textContent = 'Submitting...';
+
+        const response = await fetch('../../backend/php/lab-tests.php?action=submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        console.log('Response status:', response.status);
+        const result = await response.json();
+        console.log('Response data:', result);
+        
+        if (result.success) {
+          successMsg.textContent = 'Test results submitted successfully! Awaiting lab admin approval.';
+          document.getElementById('add-test-form').reset();
+          
+          setTimeout(() => {
+            switchTab('my-work');
+            loadMyTests();
+          }, 2000);
+        } else {
+          errorMsg.textContent = result.message || 'Failed to submit test results.';
+        }
+
+      } catch (error) {
+        console.error('Error submitting test:', error);
+        errorMsg.textContent = 'Failed to submit test results. Error: ' + error.message;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Submit Test Results';
+      }
+    });
+
+    function logout() {
+      localStorage.removeItem('staff');
+      window.location.href = 'staff-login.html';
+    }
+
+    // Load assigned tests on page load
+    loadAssignedTests();
+  </script>
+</body>
+</html>

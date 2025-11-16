@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Super Admin Panel | StrathMedics Hospital</title>
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+  <style>
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+    .tab {
+      padding: 12px 24px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      color: #6b7280;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+    }
+    .tab.active {
+      color: #2563eb;
+      border-bottom-color: #2563eb;
+      font-weight: 600;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+    .form-group label {
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: #374151;
+    }
+    .form-group input, .form-group select {
+      padding: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    .admin-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .admin-card {
+      background: white;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .admin-info h4 {
+      margin: 0 0 4px 0;
+      color: #1f2937;
+    }
+    .admin-info p {
+      margin: 2px 0;
+      color: #6b7280;
+      font-size: 14px;
+    }
+    .role-badge {
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-right: 8px;
+    }
+    .role-super {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .role-hr {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    .role-reception {
+      background: #e0e7ff;
+      color: #4338ca;
+    }
+    .role-finance {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .role-pharmacy {
+      background: #fce7f3;
+      color: #9f1239;
+    }
+    .role-lab {
+      background: #e0f2fe;
+      color: #075985;
+    }
+    .role-ward {
+      background: #fef9c3;
+      color: #854d0e;
+    }
+    .status-active {
+      background: #d1fae5;
+      color: #065f46;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .status-inactive {
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .action-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      margin-left: 6px;
+    }
+    .btn-deactivate {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .btn-activate {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .btn-delete {
+      background: #fecaca;
+      color: #7f1d1d;
+    }
+    .permissions-display {
+      margin-top: 10px;
+      padding: 10px;
+      background: #f9fafb;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    .permissions-display h5 {
+      margin: 0 0 8px 0;
+      color: #374151;
+      font-size: 14px;
+    }
+    .permission-item {
+      display: inline-block;
+      background: #e5e7eb;
+      color: #1f2937;
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin: 2px;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">SM</div>
+        <div>
+          <h1>StrathMedics</h1>
+          <div class="small">Hospital Admin</div>
+        </div>
+      </div>
+      <nav id="main-nav">
+        <ul>
+          <li><a href="super-admin-panel.html" class="active">Admin Management</a></li>
+          <li><a href="admin-panel.html">Staff Management</a></li>
+          <li><a href="index.html">Dashboard</a></li>
+          <li><a href="#" onclick="logout()">Logout</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <h2>Super Admin Panel</h2>
+        <div class="actions">
+          <div class="chip" id="admin-role">Super Admin</div>
+          <div class="avatar" title="Admin" id="admin-avatar">A</div>
+        </div>
+      </div>
+
+      <div id="super-admin-content">
+        <div class="card">
+          <div class="tabs">
+            <button class="tab active" onclick="switchTab('create')">Create Admin</button>
+            <button class="tab" onclick="switchTab('list')">All Admins</button>
+          </div>
+
+          <!-- Create Admin Tab -->
+          <div id="create-tab" class="tab-content active">
+            <h3>Create New Admin Account</h3>
+            <form id="create-admin-form">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Full Name *</label>
+                  <input type="text" id="full-name" required>
+                </div>
+                <div class="form-group">
+                  <label>Username *</label>
+                  <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                  <label>Email *</label>
+                  <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                  <label>Password *</label>
+                  <input type="password" id="password" required minlength="8">
+                </div>
+                <div class="form-group">
+                  <label>Admin Role *</label>
+                  <select id="role" required>
+                    <option value="">Select Role</option>
+                    <option value="Super Admin">Super Admin (Full Control)</option>
+                    <option value="HR Admin">HR Admin</option>
+                    <option value="Reception/Admin Clerk">Reception/Admin Clerk</option>
+                    <option value="Finance Admin">Finance Admin</option>
+                    <option value="Pharmacy Admin">Pharmacy Admin</option>
+                    <option value="Lab Admin">Lab Admin</option>
+                    <option value="Ward/Maternity Admin">Ward/Maternity Admin</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div id="permissions-info" class="permissions-display" style="display: none;">
+                <h5>Role Permissions:</h5>
+                <div id="permissions-list"></div>
+              </div>
+
+              <button type="submit" class="btn">Create Admin Account</button>
+              <p class="error" id="error-msg" style="color: #dc2626; margin-top: 10px;"></p>
+              <p class="success" id="success-msg" style="color: #10b981; margin-top: 10px;"></p>
+            </form>
+          </div>
+
+          <!-- All Admins Tab -->
+          <div id="list-tab" class="tab-content">
+            <h3>All Admin Accounts</h3>
+            <div id="admins-list" class="admin-list">
+              <p>Loading admins...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Limited Admin View -->
+      <div id="limited-admin-content" style="display: none;">
+        <div class="card">
+          <h3>Welcome to Your Admin Dashboard</h3>
+          <p>Your role: <span id="limited-role" style="font-weight: 600;"></span></p>
+          <div id="limited-permissions" class="permissions-display">
+            <h5>Your Permissions:</h5>
+            <div id="limited-permissions-list"></div>
+          </div>
+          <div style="margin-top: 20px;">
+            <button class="btn" onclick="window.location.href='admin-panel.html'">Go to Staff Management</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Check admin authentication
+    const admin = JSON.parse(localStorage.getItem('admin') || 'null');
+    if (!admin) {
+      window.location.href = 'admin-login.html';
+    }
+
+    // Display admin info
+    document.getElementById('admin-role').textContent = admin.role;
+    document.getElementById('admin-avatar').textContent = admin.username.charAt(0).toUpperCase();
+
+    // Setup navigation
+    setupNavigation();
+
+    // Show appropriate content based on role
+    if (admin.is_super_admin) {
+      document.getElementById('super-admin-content').style.display = 'block';
+      document.getElementById('limited-admin-content').style.display = 'none';
+      loadAdminsList();
+    } else {
+      document.getElementById('super-admin-content').style.display = 'none';
+      document.getElementById('limited-admin-content').style.display = 'block';
+      document.getElementById('limited-role').textContent = admin.role;
+      displayPermissions(admin.permissions, 'limited-permissions-list');
+    }
+
+    function setupNavigation() {
+      const mainNav = document.getElementById('main-nav');
+      if (!mainNav) return;
+
+      const navItems = [];
+
+      // If Super Admin, only show Admin Management
+      if (admin.is_super_admin) {
+        navItems.push('<li><a href="super-admin-panel.html" class="active">Admin Management</a></li>');
+      } else if (admin.permissions && admin.permissions.manage_staff) {
+        // Regular admin with staff management permission
+        navItems.push('<li><a href="admin-panel.html">Staff Management</a></li>');
+        navItems.push('<li><a href="index.html">Dashboard</a></li>');
+      }
+
+      navItems.push('<li><a href="#" onclick="logout()">Logout</a></li>');
+
+      mainNav.querySelector('ul').innerHTML = navItems.join('');
+    }
+
+    // Role permissions mapping
+    const rolePermissions = {
+      'Super Admin': [
+        'Full system control',
+        'Add/edit/delete other admins',
+        'Configure system settings',
+        'Manage user roles',
+        'Access all departments data',
+        'Generate all reports',
+        'Create backups / restore system'
+      ],
+      'HR Admin': [
+        'Manage staff accounts',
+        'View staff reports',
+        'Manage departments'
+      ],
+      'Reception/Admin Clerk': [
+        'Manage patients',
+        'Manage appointments',
+        'View patient reports'
+      ],
+      'Finance Admin': [
+        'Manage billing',
+        'View financial reports',
+        'Manage invoices'
+      ],
+      'Pharmacy Admin': [
+        'Manage pharmacy',
+        'Manage pharmacy inventory',
+        'View pharmacy reports'
+      ],
+      'Lab Admin': [
+        'Full access to all lab reports',
+        'Edit or delete any lab results',
+        'Approve or reject technicians\' work',
+        'Manage lab staff accounts',
+        'Configure lab settings'
+      ],
+      'Ward/Maternity Admin': [
+        'Manage wards',
+        'Manage beds',
+        'View ward reports'
+      ]
+    };
+
+    // Show permissions when role is selected
+    document.getElementById('role').addEventListener('change', function() {
+      const role = this.value;
+      const permissionsInfo = document.getElementById('permissions-info');
+      const permissionsList = document.getElementById('permissions-list');
+      
+      if (role && rolePermissions[role]) {
+        permissionsList.innerHTML = rolePermissions[role]
+          .map(p => `<span class="permission-item">${p}</span>`)
+          .join('');
+        permissionsInfo.style.display = 'block';
+      } else {
+        permissionsInfo.style.display = 'none';
+      }
+    });
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById(tab + '-tab').classList.add('active');
+
+      if (tab === 'list') loadAdminsList();
+    }
+
+    document.getElementById('create-admin-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const errorMsg = document.getElementById('error-msg');
+      const successMsg = document.getElementById('success-msg');
+      const btn = document.querySelector('button[type="submit"]');
+      
+      errorMsg.textContent = '';
+      successMsg.textContent = '';
+
+      const data = {
+        creator_id: admin.id,
+        username: document.getElementById('username').value.trim(),
+        full_name: document.getElementById('full-name').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        password: document.getElementById('password').value,
+        role: document.getElementById('role').value
+      };
+
+      try {
+        btn.disabled = true;
+        btn.textContent = 'Creating...';
+
+        const response = await fetch('../../backend/php/admin-create-admin.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+          const emailStatus = result.email_sent ? '📧 Credentials sent to email!' : '⚠️ Email notification failed';
+          successMsg.textContent = `Admin account created successfully! Username: ${result.username}. ${emailStatus}`;
+          document.getElementById('create-admin-form').reset();
+          document.getElementById('permissions-info').style.display = 'none';
+          
+          // Refresh list
+          setTimeout(() => loadAdminsList(), 1000);
+        } else {
+          errorMsg.textContent = result.message || 'Failed to create admin';
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        errorMsg.textContent = 'Network error';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Create Admin Account';
+      }
+    });
+
+    async function loadAdminsList() {
+      const container = document.getElementById('admins-list');
+      container.innerHTML = '<p>Loading...</p>';
+
+      try {
+        const response = await fetch(`../../backend/php/admin-get-admins.php?requester_id=${admin.id}`);
+        const data = await response.json();
+
+        if (data.success && data.admins.length > 0) {
+          container.innerHTML = data.admins.map(a => {
+            const roleClass = a.role.toLowerCase().replace(/[\/\s]/g, '-');
+            const isActive = a.is_active == 1;
+            
+            return `
+              <div class="admin-card">
+                <div class="admin-info">
+                  <h4>${a.full_name || a.username}</h4>
+                  <p><i class='bx bx-user'></i> ${a.username} | <i class='bx bx-envelope'></i> ${a.email || 'N/A'}</p>
+                  <p>
+                    <span class="role-badge role-${roleClass}">${a.role}</span>
+                    <span class="status-${isActive ? 'active' : 'inactive'}">${isActive ? 'Active' : 'Inactive'}</span>
+                  </p>
+                  <p style="font-size: 12px; color: #9ca3af;">
+                    Created: ${new Date(a.created_at).toLocaleDateString()} 
+                    ${a.last_login ? `| Last login: ${new Date(a.last_login).toLocaleDateString()}` : ''}
+                  </p>
+                </div>
+                <div>
+                  ${!a.is_super_admin ? `
+                    ${isActive ? 
+                      `<button class="action-btn btn-deactivate" onclick="updateAdmin(${a.id}, 'deactivate')">Deactivate</button>` :
+                      `<button class="action-btn btn-activate" onclick="updateAdmin(${a.id}, 'activate')">Activate</button>`
+                    }
+                    <button class="action-btn btn-delete" onclick="deleteAdmin(${a.id})">Delete</button>
+                  ` : '<span style="color: #9ca3af; font-size: 12px;">Protected Account</span>'}
+                </div>
+              </div>
+            `;
+          }).join('');
+        } else {
+          container.innerHTML = '<p>No admins found</p>';
+        }
+      } catch (error) {
+        container.innerHTML = '<p>Error loading admins</p>';
+      }
+    }
+
+    async function updateAdmin(adminId, action) {
+      if (!confirm(`Are you sure you want to ${action} this admin account?`)) return;
+
+      try {
+        const response = await fetch('../../backend/php/admin-update-admin.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            requester_id: admin.id,
+            admin_id: adminId,
+            action: action
+          })
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+          alert(result.message);
+          loadAdminsList();
+        } else {
+          alert('Error: ' + result.message);
+        }
+      } catch (error) {
+        alert('Network error');
+      }
+    }
+
+    async function deleteAdmin(adminId) {
+      if (!confirm('Are you sure you want to DELETE this admin account? This action cannot be undone.')) return;
+
+      try {
+        const response = await fetch('./backend/php/admin-update-admin.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            requester_id: admin.id,
+            admin_id: adminId,
+            action: 'delete'
+          })
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+          alert(result.message);
+          loadAdminsList();
+        } else {
+          alert('Error: ' + result.message);
+        }
+      } catch (error) {
+        alert('Network error');
+      }
+    }
+
+    function displayPermissions(permissions, containerId) {
+      const container = document.getElementById(containerId);
+      if (!permissions || Object.keys(permissions).length === 0) {
+        container.innerHTML = '<p style="color: #6b7280;">No permissions assigned</p>';
+        return;
+      }
+      
+      const permissionLabels = {
+        'manage_admins': 'Manage Admins',
+        'manage_staff': 'Manage Staff',
+        'manage_patients': 'Manage Patients',
+        'manage_appointments': 'Manage Appointments',
+        'manage_inventory': 'Manage Inventory',
+        'manage_billing': 'Manage Billing',
+        'manage_pharmacy': 'Manage Pharmacy',
+        'manage_lab': 'Manage Lab',
+        'manage_wards': 'Manage Wards',
+        'view_all_reports': 'View All Reports',
+        'system_settings': 'System Settings',
+        'backup_restore': 'Backup & Restore',
+        'view_staff_reports': 'View Staff Reports',
+        'manage_departments': 'Manage Departments',
+        'view_patient_reports': 'View Patient Reports',
+        'view_financial_reports': 'View Financial Reports',
+        'manage_invoices': 'Manage Invoices',
+        'manage_pharmacy_inventory': 'Manage Pharmacy Inventory',
+        'view_pharmacy_reports': 'View Pharmacy Reports',
+        'manage_lab_tests': 'Manage Lab Tests',
+        'view_lab_reports': 'View Lab Reports',
+        'manage_beds': 'Manage Beds',
+        'view_ward_reports': 'View Ward Reports'
+      };
+      
+      container.innerHTML = Object.keys(permissions)
+        .filter(key => permissions[key])
+        .map(key => `<span class="permission-item">${permissionLabels[key] || key}</span>`)
+        .join('');
+    }
+
+    function logout() {
+      localStorage.removeItem('admin');
+      window.location.href = 'admin-login.html';
+    }
+  </script>
+</body>
+</html>
