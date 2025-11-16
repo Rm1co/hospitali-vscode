@@ -1,0 +1,56 @@
+# Vendor dependencies (managed by composer)
+/vendor/
+
+# Composer files
+composer.lock
+
+# Environment and configuration files with sensitive data
+backend/php/email-config.php
+backend/php/DatabaseConnector.php
+
+# Log files
+/logs/
+*.log
+
+# Documentation files (temporary/internal)
+*.md
+!README.md
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Test files
+backend/php/test-*.php
+backend/php/diagnostic.php
+
+# Database setup scripts (one-time use)
+setup-database.bat
+setup-database.sh
+setup-database.html
+update-database.html
+
+# Old/deprecated HTML files in root
+/*.html
+!index.html
+
+# Old CSS/JS files in root
+/*.css
+/*.js
+
+# Batch and shell scripts in root
+/*.bat
+/*.sh
