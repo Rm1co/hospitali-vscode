@@ -88,6 +88,8 @@ function renderBilling() {
         <th>Patient</th>
         <th>Amount</th>
         <th>Status</th>
+        <th>Payment Method</th>
+        <th>Transaction ID</th>
         <th>Date</th>
       </tr>
     </thead>
@@ -100,8 +102,30 @@ function renderBilling() {
           <td>${inv.patient_name || 'N/A'}</td>
           <td>$${parseFloat(inv.total).toFixed(2)}</td>
           <td><span style="padding:4px 8px;border-radius:4px;background:${
-            inv.status === 'Paid' ? '#d4edda' : '#fff3cd'
-          };color:${inv.status === 'Paid' ? '#155724' : '#856404'}">${inv.status}</span></td>
+            inv.status.toLowerCase() === 'paid'
+              ? '#d4edda'
+              : inv.status.toLowerCase() === 'unpaid'
+              ? '#f8d7da'
+              : '#fff3cd'
+          };color:${
+            inv.status.toLowerCase() === 'paid'
+              ? '#155724'
+              : inv.status.toLowerCase() === 'unpaid'
+              ? '#721c24'
+              : '#856404'
+          }">${inv.status.charAt(0).toUpperCase() + inv.status.slice(1)}</span></td>
+          <td>${
+            inv.payment_method
+              ? `<span style="font-size:12px;">${
+                  inv.payment_method.charAt(0).toUpperCase() + inv.payment_method.slice(1)
+                }</span>`
+              : '-'
+          }</td>
+          <td>${
+            inv.transaction_id
+              ? `<span style="font-size:11px;color:#666;">${inv.transaction_id}</span>`
+              : '-'
+          }</td>
           <td>${new Date(inv.created_at).toLocaleDateString()}</td>
         </tr>
       `
@@ -238,4 +262,9 @@ document.addEventListener('DOMContentLoaded', () => {
   setupAdminNavigation();
   loadInvoices();
   loadPatients();
+
+  // Auto-refresh invoices every 30 seconds to show new payments
+  setInterval(() => {
+    loadInvoices();
+  }, 30000);
 });

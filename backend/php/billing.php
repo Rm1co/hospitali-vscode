@@ -8,13 +8,15 @@ $method = $_SERVER['REQUEST_METHOD'];
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 
 if ($method === 'GET' && $action === 'list') {
-    // Fetch all invoices with patient names
+    // Fetch all invoices with patient names and payment details
     try {
         $invoices = $db->fetchAll('
             SELECT i.id, i.patient_id, i.total, i.status, i.created_at,
-                   CONCAT(p.first_name, " ", p.last_name) as patient_name
+                   CONCAT(p.first_name, " ", p.last_name) as patient_name,
+                   pay.payment_method, pay.transaction_id, pay.payment_date
             FROM invoices i
             LEFT JOIN patients p ON i.patient_id = p.id
+            LEFT JOIN payments pay ON i.id = pay.invoice_id
             ORDER BY i.id DESC
         ');
         http_response_code(200);
