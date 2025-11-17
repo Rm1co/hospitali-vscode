@@ -189,6 +189,81 @@
       color: var(--danger);
     }
 
+    .status-pending {
+      background: #fef3c7;
+      color: var(--warning);
+    }
+
+    .status-paid {
+      background: #d1fae5;
+      color: var(--success);
+    }
+
+    .status-unpaid {
+      background: #fee2e2;
+      color: var(--danger);
+    }
+
+    .invoice-item {
+      padding: 15px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-bg);
+    }
+
+    .invoice-info h4 {
+      color: var(--primary);
+      margin-bottom: 5px;
+      font-size: 18px;
+    }
+
+    .invoice-info p {
+      font-size: 14px;
+      color: #666;
+      margin: 3px 0;
+    }
+
+    .invoice-amount {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .invoice-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+    }
+
+    .tab-btn {
+      padding: 12px 20px;
+      border: none;
+      background: transparent;
+      color: var(--text-color);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab-btn:hover {
+      color: var(--primary);
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
     .btn-group {
       display: flex;
       gap: 10px;
@@ -233,6 +308,137 @@
       font-size: 48px;
       margin-bottom: 15px;
       opacity: 0.5;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      border-radius: 10px;
+      width: 90%;
+      max-width: 800px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h2 {
+      color: var(--primary);
+      font-size: 24px;
+      margin: 0;
+    }
+
+    .close {
+      color: #999;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      line-height: 20px;
+    }
+
+    .close:hover {
+      opacity: 0.8;
+    }
+
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .record-item {
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 15px;
+      margin-bottom: 15px;
+      background: var(--bg-color);
+    }
+
+    .record-item h4 {
+      color: var(--primary);
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .record-item p {
+      margin: 8px 0;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .record-item strong {
+      color: var(--text-color);
+      font-weight: 600;
+    }
+
+    .record-date {
+      color: #666;
+      font-size: 13px;
+      font-style: italic;
+    }
+
+    /* Toast Notifications */
+    .toast-message {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 16px 24px;
+      border-radius: 8px;
+      color: white;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transform: translateX(400px);
+      transition: transform 0.3s ease;
+      z-index: 10000;
+      min-width: 300px;
+    }
+
+    .toast-message.show {
+      transform: translateX(0);
+    }
+
+    .toast-message i {
+      font-size: 24px;
+    }
+
+    .toast-success {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+
+    .toast-error {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .toast-info {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
     }
 
     @media (max-width: 768px) {
@@ -280,20 +486,184 @@
         <div class="stat-value" id="upcoming-appointments">0</div>
         <p class="stat-label">Appointments coming up</p>
       </div>
+
+      <div class="card">
+        <h3><i class='bx bxs-dollar-circle'></i> Total Bills</h3>
+        <div class="stat-value" id="total-bills">$0</div>
+        <p class="stat-label">Outstanding balance</p>
+      </div>
     </div>
 
     <div class="appointments-section">
       <h2>Your Appointments</h2>
+      
+      <!-- Tabs -->
+      <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid var(--border-color);">
+        <button class="tab-btn active" onclick="filterPatientAppointments('pending', this)">
+          <i class='bx bxs-time-five'></i> Pending Requests
+        </button>
+        <button class="tab-btn" onclick="filterPatientAppointments('upcoming', this)">
+          <i class='bx bxs-calendar-check'></i> Upcoming
+        </button>
+        <button class="tab-btn" onclick="filterPatientAppointments('completed', this)">
+          <i class='bx bxs-check-circle'></i> Completed
+        </button>
+      </div>
+      
       <div id="appointments-list"></div>
+    </div>
+
+    <div class="appointments-section" style="margin-top: 30px;">
+      <h2><i class='bx bxs-receipt'></i> My Bills & Invoices</h2>
+      <div id="invoices-list"></div>
     </div>
 
     <div class="btn-group">
       <button class="btn btn-primary" onclick="showRequestModal()">
         <i class='bx bxs-calendar-plus'></i> Request Appointment
       </button>
+      <button class="btn btn-secondary" onclick="viewMedicalRecords()">
+        <i class='bx bxs-file-doc'></i> My Medical Records
+      </button>
       <button class="btn btn-secondary" onclick="viewProfile()">
         <i class='bx bxs-user'></i> View Profile
       </button>
+    </div>
+  </div>
+
+  <!-- Medical Records Modal -->
+  <div id="medical-records-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class='bx bxs-file-doc'></i> My Medical Records</h2>
+        <span class="close" onclick="closeMedicalRecordsModal()">&times;</span>
+      </div>
+      <div class="modal-body" id="medical-records-body">
+        <p style="text-align: center; color: #999;">Loading...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Modal -->
+  <div id="profile-modal" class="modal">
+    <div class="modal-content" style="max-width: 600px;">
+      <div class="modal-header">
+        <h2><i class='bx bxs-user-circle'></i> My Profile</h2>
+        <span class="close" onclick="closeProfileModal()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="profile-form" style="display: flex; flex-direction: column; gap: 15px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div>
+              <label style="display: block; margin-bottom: 5px; font-weight: 600;">First Name *</label>
+              <input type="text" id="profile-first-name" required style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; background: var(--card-bg); color: var(--text-color);">
+            </div>
+            <div>
+              <label style="display: block; margin-bottom: 5px; font-weight: 600;">Last Name *</label>
+              <input type="text" id="profile-last-name" required style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; background: var(--card-bg); color: var(--text-color);">
+            </div>
+          </div>
+
+          <div>
+            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Phone Number *</label>
+            <input type="tel" id="profile-phone" required style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; background: var(--card-bg); color: var(--text-color);">
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div>
+              <label style="display: block; margin-bottom: 5px; font-weight: 600;">Date of Birth *</label>
+              <input type="date" id="profile-dob" required style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; background: var(--card-bg); color: var(--text-color);">
+            </div>
+            <div>
+              <label style="display: block; margin-bottom: 5px; font-weight: 600;">Gender *</label>
+              <select id="profile-gender" required style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; background: var(--card-bg); color: var(--text-color);">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Address</label>
+            <textarea id="profile-address" rows="2" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; background: var(--card-bg); color: var(--text-color);"></textarea>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button type="button" onclick="closeProfileModal()" class="btn btn-secondary" style="flex: 1;">Cancel</button>
+            <button type="submit" class="btn btn-primary" style="flex: 1;">
+              <i class='bx bx-save'></i> Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Modal -->
+  <div id="payment-modal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+      <div class="modal-header">
+        <h2><i class='bx bxs-credit-card'></i> Payment</h2>
+        <span class="close" onclick="closePaymentModal()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="payment-form" style="display: flex; flex-direction: column; gap: 15px;">
+          <input type="hidden" id="payment-invoice-id">
+          
+          <div style="background: var(--bg-color); padding: 15px; border-radius: 6px; margin-bottom: 10px;">
+            <p style="font-size: 14px; color: #666; margin-bottom: 5px;">Amount to Pay</p>
+            <h3 style="color: var(--primary); font-size: 32px; margin: 0;" id="payment-amount">$0.00</h3>
+          </div>
+
+          <div>
+            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Payment Method *</label>
+            <select id="payment-method" required style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; background: var(--card-bg); color: var(--text-color);">
+              <option value="">Select Payment Method</option>
+              <option value="mpesa">M-Pesa</option>
+              <option value="card">Credit/Debit Card</option>
+              <option value="cash">Cash</option>
+              <option value="insurance">Insurance</option>
+            </select>
+          </div>
+
+          <div id="mpesa-fields" style="display: none;">
+            <label style="display: block; margin-bottom: 5px; font-weight: 600;">M-Pesa Phone Number *</label>
+            <input type="tel" id="mpesa-phone" placeholder="0712345678" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; background: var(--card-bg); color: var(--text-color);">
+          </div>
+
+          <div id="card-fields" style="display: none;">
+            <div style="margin-bottom: 10px;">
+              <label style="display: block; margin-bottom: 5px; font-weight: 600;">Card Number *</label>
+              <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; background: var(--card-bg); color: var(--text-color);">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Expiry Date *</label>
+                <input type="text" id="card-expiry" placeholder="MM/YY" maxlength="5" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; background: var(--card-bg); color: var(--text-color);">
+              </div>
+              <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">CVV *</label>
+                <input type="text" id="card-cvv" placeholder="123" maxlength="3" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; background: var(--card-bg); color: var(--text-color);">
+              </div>
+            </div>
+          </div>
+
+          <div id="insurance-fields" style="display: none;">
+            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Insurance Provider *</label>
+            <input type="text" id="insurance-provider" placeholder="Insurance company name" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; background: var(--card-bg); color: var(--text-color);">
+            <label style="display: block; margin-top: 10px; margin-bottom: 5px; font-weight: 600;">Policy Number *</label>
+            <input type="text" id="insurance-policy" placeholder="Policy number" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 5px; background: var(--card-bg); color: var(--text-color);">
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button type="button" onclick="closePaymentModal()" class="btn btn-secondary" style="flex: 1;">Cancel</button>
+            <button type="submit" class="btn btn-primary" style="flex: 1;">
+              <i class='bx bx-check'></i> Confirm Payment
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 
@@ -341,6 +711,10 @@
 
   <script>
     let patientData = null;
+    let allAppointments = [];
+    let allRequests = [];
+    let allInvoices = [];
+    let currentFilter = 'pending';
 
     function loadTheme() {
       const savedTheme = localStorage.getItem('theme') || 'light';
@@ -375,49 +749,225 @@
       if (!patientData) return;
 
       try {
-        const response = await fetch('../../backend/php/get-appointments.php?patient_id=' + patientData.patient_id);
-        const data = await response.json();
+        // Load allocated appointments
+        const appointmentsResponse = await fetch('../../backend/php/get-appointments.php?patient_id=' + patientData.patient_id);
+        const appointmentsData = await appointmentsResponse.json();
 
-        if (data.success) {
-          renderAppointments(data.appointments);
-          updateStats(data.appointments);
+        // Load appointment requests (pending)
+        const requestsResponse = await fetch('../../backend/php/get-appointment-requests.php?patient_id=' + patientData.patient_id);
+        const requestsData = await requestsResponse.json();
+
+        if (appointmentsData.success) {
+          allAppointments = appointmentsData.appointments || [];
         }
+
+        if (requestsData.success) {
+          allRequests = requestsData.requests || [];
+        }
+
+        updateStats();
+        filterPatientAppointments(currentFilter);
+        
+        // Also load invoices
+        await loadInvoices();
       } catch (error) {
         console.error('Error loading appointments:', error);
       }
     }
 
-    function renderAppointments(appointments) {
-      const container = document.getElementById('appointments-list');
+    async function loadInvoices() {
+      if (!patientData || !patientData.patient_id) {
+        console.log('No patient data available for loading invoices');
+        return;
+      }
 
-      if (!appointments || appointments.length === 0) {
+      console.log('Loading invoices for patient:', patientData.patient_id);
+
+      try {
+        const response = await fetch(`../../backend/php/get-patient-invoices.php?patient_id=${patientData.patient_id}`);
+        const data = await response.json();
+
+        console.log('Invoices response:', data);
+
+        if (data.success) {
+          allInvoices = data.invoices || [];
+          console.log('Loaded invoices:', allInvoices);
+          renderInvoices(allInvoices);
+          updateInvoiceStats(allInvoices);
+        } else {
+          console.error('Failed to load invoices:', data.message);
+        }
+      } catch (error) {
+        console.error('Error loading invoices:', error);
+      }
+    }
+
+    function renderInvoices(invoices) {
+      const container = document.getElementById('invoices-list');
+      
+      console.log('Rendering invoices:', invoices);
+
+      if (!container) {
+        console.error('invoices-list container not found');
+        return;
+      }
+
+      if (!invoices || invoices.length === 0) {
         container.innerHTML = `
           <div class="empty-state">
-            <i class='bx bxs-calendar'></i>
-            <p>No appointments scheduled yet</p>
+            <i class='bx bxs-receipt'></i>
+            <p>No bills or invoices yet</p>
           </div>
         `;
         return;
       }
 
-      container.innerHTML = appointments.map(apt => `
-        <div class="appointment-item">
-          <div class="appointment-info">
-            <h4>Dr. ${apt.doctor_name}</h4>
-            <p><i class='bx bxs-building'></i> ${apt.department}</p>
-            <p><i class='bx bxs-time'></i> ${formatDateTime(apt.appointment_time)}</p>
+      container.innerHTML = invoices.map(invoice => `
+        <div class="invoice-item">
+          <div class="invoice-info">
+            <h4>Invoice #${invoice.id}</h4>
+            <p><i class='bx bxs-calendar'></i> Date: ${formatDateTime(invoice.created_at)}</p>
           </div>
-          <span class="status-badge status-${apt.status.toLowerCase()}">${apt.status}</span>
+          <div class="invoice-actions">
+            <div class="invoice-amount">$${parseFloat(invoice.total).toFixed(2)}</div>
+            <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-end;">
+              <span class="status-badge status-${invoice.status.toLowerCase()}">${invoice.status}</span>
+              ${invoice.status.toLowerCase() === 'unpaid' ? `
+                <button class="btn btn-primary" onclick="showPaymentModal(${invoice.id}, ${invoice.total})" style="padding: 6px 12px; font-size: 12px;">
+                  <i class='bx bx-credit-card'></i> Pay Now
+                </button>
+              ` : ''}
+            </div>
+          </div>
         </div>
       `).join('');
     }
 
-    function updateStats(appointments) {
-      const now = new Date();
-      const completed = appointments.filter(a => a.status === 'Completed').length;
-      const upcoming = appointments.filter(a => new Date(a.appointment_time) > now).length;
+    function updateInvoiceStats(invoices) {
+      const unpaidInvoices = invoices.filter(inv => inv.status.toLowerCase() === 'unpaid');
+      const totalUnpaid = unpaidInvoices.reduce((sum, inv) => sum + parseFloat(inv.total), 0);
+      
+      console.log('Updating invoice stats - Total unpaid:', totalUnpaid);
+      
+      const billsElement = document.getElementById('total-bills');
+      if (billsElement) {
+        billsElement.textContent = '$' + totalUnpaid.toFixed(2);
+      } else {
+        console.error('total-bills element not found');
+      }
+    }
 
-      document.getElementById('total-appointments').textContent = appointments.length;
+    function filterPatientAppointments(filter, clickedButton) {
+      currentFilter = filter;
+
+      // Update tab buttons
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+        // Check if this button matches the current filter
+        const btnText = btn.textContent.toLowerCase();
+        if ((filter === 'pending' && btnText.includes('pending')) ||
+            (filter === 'upcoming' && btnText.includes('upcoming')) ||
+            (filter === 'completed' && btnText.includes('completed'))) {
+          btn.classList.add('active');
+        }
+      });
+
+      const container = document.getElementById('appointments-list');
+      const now = new Date();
+      let itemsToShow = [];
+
+      if (filter === 'pending') {
+        // Show appointment requests that are still pending
+        itemsToShow = allRequests.filter(req => req.status === 'Pending');
+        
+        if (itemsToShow.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <i class='bx bxs-time-five'></i>
+              <p>No pending appointment requests</p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = itemsToShow.map(req => `
+          <div class="appointment-item">
+            <div class="appointment-info">
+              <h4>${req.department} Department</h4>
+              <p><i class='bx bxs-calendar'></i> Preferred Date: ${req.preferred_date}</p>
+              <p><i class='bx bxs-time'></i> Preferred Time: ${req.preferred_time}</p>
+              <p><i class='bx bxs-info-circle'></i> ${req.reason}</p>
+              <p style="font-size: 12px; color: #999; margin-top: 5px;">Requested: ${formatDateTime(req.created_at)}</p>
+            </div>
+            <span class="status-badge status-pending">Pending</span>
+          </div>
+        `).join('');
+
+      } else if (filter === 'upcoming') {
+        // Show scheduled appointments that haven't happened yet
+        itemsToShow = allAppointments.filter(apt => 
+          apt.status === 'Scheduled' && new Date(apt.appointment_time) > now
+        );
+
+        if (itemsToShow.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <i class='bx bxs-calendar-check'></i>
+              <p>No upcoming appointments</p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = itemsToShow.map(apt => `
+          <div class="appointment-item">
+            <div class="appointment-info">
+              <h4>Dr. ${apt.doctor_name}</h4>
+              <p><i class='bx bxs-building'></i> ${apt.department}</p>
+              <p><i class='bx bxs-time'></i> ${formatDateTime(apt.appointment_time)}</p>
+              ${apt.notes ? `<p><i class='bx bxs-info-circle'></i> ${apt.notes}</p>` : ''}
+            </div>
+            <span class="status-badge status-${apt.status.toLowerCase()}">${apt.status}</span>
+          </div>
+        `).join('');
+
+      } else if (filter === 'completed') {
+        // Show completed appointments
+        itemsToShow = allAppointments.filter(apt => apt.status === 'Completed');
+
+        if (itemsToShow.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <i class='bx bxs-check-circle'></i>
+              <p>No completed appointments</p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = itemsToShow.map(apt => `
+          <div class="appointment-item">
+            <div class="appointment-info">
+              <h4>Dr. ${apt.doctor_name}</h4>
+              <p><i class='bx bxs-building'></i> ${apt.department}</p>
+              <p><i class='bx bxs-time'></i> ${formatDateTime(apt.appointment_time)}</p>
+            </div>
+            <span class="status-badge status-${apt.status.toLowerCase()}">${apt.status}</span>
+          </div>
+        `).join('');
+      }
+    }
+
+    function updateStats() {
+      const now = new Date();
+      const pending = allRequests.filter(req => req.status === 'Pending').length;
+      const upcoming = allAppointments.filter(apt => 
+        apt.status === 'Scheduled' && new Date(apt.appointment_time) > now
+      ).length;
+      const completed = allAppointments.filter(apt => apt.status === 'Completed').length;
+      const total = allAppointments.length;
+
+      document.getElementById('total-appointments').textContent = total + pending;
       document.getElementById('completed-appointments').textContent = completed;
       document.getElementById('upcoming-appointments').textContent = upcoming;
     }
@@ -426,6 +976,42 @@
       if (!dateString) return 'N/A';
       const date = new Date(dateString);
       return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+
+    function showToast(message, type = 'success') {
+      // Remove any existing toast
+      const existingToast = document.querySelector('.toast-message');
+      if (existingToast) {
+        existingToast.remove();
+      }
+
+      // Create toast element
+      const toast = document.createElement('div');
+      toast.className = `toast-message toast-${type}`;
+      
+      const icon = type === 'success' ? 'bx-check-circle' : 
+                   type === 'error' ? 'bx-error-circle' : 
+                   'bx-info-circle';
+      
+      toast.innerHTML = `
+        <i class='bx ${icon}'></i>
+        <span>${message}</span>
+      `;
+
+      document.body.appendChild(toast);
+
+      // Show toast with animation
+      setTimeout(() => {
+        toast.classList.add('show');
+      }, 10);
+
+      // Remove after 4 seconds
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+          toast.remove();
+        }, 300);
+      }, 4000);
     }
 
     function showRequestModal() {
@@ -466,14 +1052,24 @@
         const data = await response.json();
 
         if (data.success) {
-          alert('Appointment request submitted successfully! Our secretary will contact you soon.');
+          // Show beautiful success notification
+          showToast('Appointment request submitted successfully! Our secretary will contact you soon.', 'success');
           hideRequestModal();
+          // Reload appointments to show the new pending request
+          await loadAppointments();
+          // Switch to pending tab to show the new request
+          setTimeout(() => {
+            const pendingBtn = document.querySelector('.tab-btn');
+            if (pendingBtn) {
+              pendingBtn.click();
+            }
+          }, 500);
         } else {
-          alert('Error: ' + data.message);
+          showToast('Error: ' + data.message, 'error');
         }
       } catch (error) {
         console.error('Error:', error);
-        alert('Error submitting request. Please try again.');
+        showToast('Error submitting request. Please try again.', 'error');
       }
     });
 
@@ -481,9 +1077,300 @@
       window.location.href = 'appointments.html';
     }
 
-    function viewProfile() {
-      alert('Profile page coming soon');
+    async function viewMedicalRecords() {
+      if (!patientData || !patientData.patient_id) {
+        alert('Patient information not found. Please log in again.');
+        return;
+      }
+
+      const modal = document.getElementById('medical-records-modal');
+      const modalBody = document.getElementById('medical-records-body');
+      
+      modal.classList.add('show');
+      modalBody.innerHTML = '<p style="text-align: center; color: #999;">Loading medical records...</p>';
+
+      try {
+        const response = await fetch(`../../backend/php/medical-records.php?patient_id=${patientData.patient_id}`);
+        const result = await response.json();
+
+        if (result.success) {
+          const records = result.records;
+          
+          if (!records || records.length === 0) {
+            modalBody.innerHTML = `
+              <div class="empty-state">
+                <i class='bx bxs-file-doc'></i>
+                <p>No medical records found</p>
+                <p style="font-size: 14px; margin-top: 10px;">Your medical records will appear here after doctor appointments</p>
+              </div>
+            `;
+            return;
+          }
+
+          // Get patient name from records if not in patientData
+          const patientName = (patientData.first_name && patientData.last_name) 
+            ? `${patientData.first_name} ${patientData.last_name}`
+            : (records[0] && records[0].patient_name) 
+              ? records[0].patient_name 
+              : 'Patient';
+
+          modalBody.innerHTML = `
+            <h3 style="color: var(--primary); margin-bottom: 20px;">
+              <i class='bx bxs-user'></i> ${patientName}
+            </h3>
+            ${records.map(record => `
+              <div class="record-item">
+                <h4><i class='bx bxs-calendar'></i> Visit: ${formatDateTime(record.visit_date)}</h4>
+                <p class="record-date">
+                  Attended by: Dr. ${record.doctor_name || 'Unknown'} ${record.doctor_role ? '(' + record.doctor_role + ')' : ''} ${record.doctor_department ? '- ' + record.doctor_department : ''}
+                </p>
+                ${record.appointment_date ? `
+                  <p class="record-date"><i class='bx bxs-time'></i> Appointment Date: ${formatDateTime(record.appointment_date)}</p>
+                ` : ''}
+                ${record.reason ? `
+                  <p><strong>Reason for Visit:</strong> ${record.reason}</p>
+                ` : ''}
+                
+                ${record.diagnosis ? `
+                  <p><strong>Diagnosis:</strong> ${record.diagnosis}</p>
+                ` : ''}
+                
+                ${record.treatment ? `
+                  <p><strong>Treatment:</strong> ${record.treatment}</p>
+                ` : ''}
+                
+                ${record.medications ? `
+                  <p><strong>Medications Prescribed:</strong> ${record.medications}</p>
+                ` : ''}
+                
+                ${record.notes ? `
+                  <p><strong>Additional Notes:</strong> ${record.notes}</p>
+                ` : ''}
+              </div>
+            `).join('')}
+          `;
+        } else {
+          modalBody.innerHTML = `
+            <div class="empty-state">
+              <i class='bx bxs-error'></i>
+              <p>Error loading medical records: ${result.message}</p>
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error('Error fetching medical records:', error);
+        modalBody.innerHTML = `
+          <div class="empty-state">
+            <i class='bx bxs-error'></i>
+            <p>Failed to load medical records</p>
+          </div>
+        `;
+      }
     }
+
+    function closeMedicalRecordsModal() {
+      const modal = document.getElementById('medical-records-modal');
+      modal.classList.remove('show');
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const medicalModal = document.getElementById('medical-records-modal');
+      const paymentModal = document.getElementById('payment-modal');
+      const profileModal = document.getElementById('profile-modal');
+      if (event.target === medicalModal) {
+        closeMedicalRecordsModal();
+      }
+      if (event.target === paymentModal) {
+        closePaymentModal();
+      }
+      if (event.target === profileModal) {
+        closeProfileModal();
+      }
+    }
+
+    function showPaymentModal(invoiceId, amount) {
+      document.getElementById('payment-invoice-id').value = invoiceId;
+      document.getElementById('payment-amount').textContent = '$' + parseFloat(amount).toFixed(2);
+      document.getElementById('payment-modal').classList.add('show');
+      document.getElementById('payment-form').reset();
+    }
+
+    function closePaymentModal() {
+      document.getElementById('payment-modal').classList.remove('show');
+    }
+
+    // Payment method change handler
+    document.getElementById('payment-method').addEventListener('change', function() {
+      const method = this.value;
+      
+      // Hide all method-specific fields
+      document.getElementById('mpesa-fields').style.display = 'none';
+      document.getElementById('card-fields').style.display = 'none';
+      document.getElementById('insurance-fields').style.display = 'none';
+      
+      // Show relevant fields
+      if (method === 'mpesa') {
+        document.getElementById('mpesa-fields').style.display = 'block';
+      } else if (method === 'card') {
+        document.getElementById('card-fields').style.display = 'block';
+      } else if (method === 'insurance') {
+        document.getElementById('insurance-fields').style.display = 'block';
+      }
+    });
+
+    // Payment form submission
+    document.getElementById('payment-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const invoiceId = document.getElementById('payment-invoice-id').value;
+      const method = document.getElementById('payment-method').value;
+      const amount = document.getElementById('payment-amount').textContent.replace('$', '');
+
+      if (!method) {
+        showToast('Please select a payment method', 'error');
+        return;
+      }
+
+      // Validate method-specific fields
+      if (method === 'mpesa') {
+        const phone = document.getElementById('mpesa-phone').value;
+        if (!phone) {
+          showToast('Please enter M-Pesa phone number', 'error');
+          return;
+        }
+      } else if (method === 'card') {
+        const cardNumber = document.getElementById('card-number').value;
+        const expiry = document.getElementById('card-expiry').value;
+        const cvv = document.getElementById('card-cvv').value;
+        if (!cardNumber || !expiry || !cvv) {
+          showToast('Please fill in all card details', 'error');
+          return;
+        }
+      } else if (method === 'insurance') {
+        const provider = document.getElementById('insurance-provider').value;
+        const policy = document.getElementById('insurance-policy').value;
+        if (!provider || !policy) {
+          showToast('Please fill in insurance details', 'error');
+          return;
+        }
+      }
+
+      try {
+        const response = await fetch('../../backend/php/process-payment.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            invoice_id: invoiceId,
+            patient_id: patientData.patient_id,
+            amount: amount,
+            payment_method: method,
+            mpesa_phone: method === 'mpesa' ? document.getElementById('mpesa-phone').value : null,
+            card_number: method === 'card' ? document.getElementById('card-number').value : null,
+            insurance_provider: method === 'insurance' ? document.getElementById('insurance-provider').value : null,
+            insurance_policy: method === 'insurance' ? document.getElementById('insurance-policy').value : null
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          showToast('Payment successful! Invoice has been marked as paid.', 'success');
+          closePaymentModal();
+          // Reload invoices to show updated status
+          await loadInvoices();
+        } else {
+          showToast('Payment failed: ' + data.message, 'error');
+        }
+      } catch (error) {
+        console.error('Payment error:', error);
+        showToast('Payment processing failed. Please try again.', 'error');
+      }
+    });
+
+    function viewProfile() {
+      // Load current patient data into profile form
+      const patient = JSON.parse(localStorage.getItem('patient'));
+      if (patient) {
+        document.getElementById('profile-first-name').value = patient.first_name || '';
+        document.getElementById('profile-last-name').value = patient.last_name || '';
+        document.getElementById('profile-phone').value = patient.phone || '';
+        document.getElementById('profile-dob').value = patient.dob || '';
+        document.getElementById('profile-gender').value = patient.gender || '';
+        document.getElementById('profile-address').value = patient.address || '';
+      }
+      
+      document.getElementById('profile-modal').classList.add('show');
+    }
+
+    function closeProfileModal() {
+      document.getElementById('profile-modal').classList.remove('show');
+    }
+
+    // Profile form submission
+    document.getElementById('profile-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const patient = JSON.parse(localStorage.getItem('patient'));
+      console.log('Patient from localStorage:', patient);
+      
+      const updatedData = {
+        id: patient.patient_id,
+        first_name: document.getElementById('profile-first-name').value,
+        last_name: document.getElementById('profile-last-name').value,
+        phone: document.getElementById('profile-phone').value,
+        dob: document.getElementById('profile-dob').value,
+        gender: document.getElementById('profile-gender').value,
+        address: document.getElementById('profile-address').value
+      };
+
+      console.log('Sending update data:', updatedData);
+
+      try {
+        const response = await fetch('../../backend/php/update-patient-profile.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedData)
+        });
+
+        const responseText = await response.text();
+        console.log('Raw response:', responseText);
+
+        let data;
+        try {
+          data = JSON.parse(responseText);
+        } catch (parseError) {
+          console.error('JSON parse error:', parseError);
+          showToast('Server error: Invalid response format', 'error');
+          return;
+        }
+
+        console.log('Parsed response:', data);
+
+        if (data.success) {
+          // Update localStorage with new data
+          const updatedPatient = {
+            ...patient,
+            first_name: updatedData.first_name,
+            last_name: updatedData.last_name,
+            phone: updatedData.phone,
+            dob: updatedData.dob,
+            gender: updatedData.gender,
+            address: updatedData.address
+          };
+          localStorage.setItem('patient', JSON.stringify(updatedPatient));
+
+          showToast('Profile updated successfully!', 'success');
+          closeProfileModal();
+        } else {
+          console.error('Update failed:', data.message);
+          showToast('Failed to update profile: ' + data.message, 'error');
+        }
+      } catch (error) {
+        console.error('Profile update error:', error);
+        showToast('Failed to update profile. Please try again.', 'error');
+      }
+    });
 
     function logout() {
       localStorage.removeItem('patient');
