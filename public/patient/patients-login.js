@@ -237,14 +237,22 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
 
     const data = await response.json();
     if (data.success) {
-      localStorage.setItem(
-        'patient',
-        JSON.stringify({
-          account_id: data.account_id,
-          patient_id: data.patient_id,
-          email: data.email,
-        })
-      );
+      const patientData = {
+        account_id: data.account_id,
+        patient_id: data.patient_id,
+        email: data.email,
+      };
+
+      // Include patient details if available
+      if (data.patient) {
+        patientData.first_name = data.patient.first_name;
+        patientData.last_name = data.patient.last_name;
+        patientData.phone = data.patient.phone;
+        patientData.dob = data.patient.dob;
+        patientData.gender = data.patient.gender;
+      }
+
+      localStorage.setItem('patient', JSON.stringify(patientData));
       window.location.href = 'patient-dashboard.html';
     } else {
       errorMsg.textContent = data.message || 'Login failed';

@@ -43,9 +43,11 @@ try {
                 mr.created_at,
                 CONCAT(s.first_name, ' ', s.last_name) as doctor_name,
                 s.role as doctor_role,
-                s.department as doctor_department
+                s.department as doctor_department,
+                CONCAT(p.first_name, ' ', p.last_name) as patient_name
             FROM medical_records mr
             LEFT JOIN staff s ON mr.staff_id = s.id
+            LEFT JOIN patients p ON mr.patient_id = p.id
             WHERE mr.patient_id = ?
             ORDER BY mr.visit_date DESC
         ";

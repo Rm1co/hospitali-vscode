@@ -11,30 +11,56 @@ $db = DatabaseConnector::getInstance();
 $pdo = $db->getConnection();
 
 try {
-    $status = $_GET['status'] ?? 'Pending';
+    // Check if filtering by patient_id (for patient view) or status (for secretary view)
+    if (isset($_GET['patient_id'])) {
+        // Patient view - get all requests for this patient
+        $patientId = (int)$_GET['patient_id'];
+        
+        $sql = "
+            SELECT 
+                ar.id,
+                ar.patient_id,
+                ar.department,
+                ar.preferred_date,
+                ar.preferred_time,
+                ar.reason,
+                ar.status,
+                ar.created_at
+            FROM appointment_requests ar
+            WHERE ar.patient_id = ?
+            ORDER BY ar.created_at DESC
+        ";
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$patientId]);
+    } else {
+        // Secretary view - get all requests by status
+        $status = $_GET['status'] ?? 'Pending';
+        
+        $sql = "
+            SELECT 
+                ar.id,
+                ar.patient_id,
+                ar.department,
+                ar.preferred_date,
+                ar.preferred_time,
+                ar.reason,
+                ar.status,
+                ar.created_at,
+                CONCAT(p.first_name, ' ', p.last_name) as patient_name,
+                p.phone as patient_phone,
+                pa.email as patient_email
+            FROM appointment_requests ar
+            JOIN patients p ON ar.patient_id = p.id
+            LEFT JOIN patient_accounts pa ON p.id = pa.patient_id
+            WHERE ar.status = ?
+            ORDER BY ar.created_at DESC
+        ";
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$status]);
+    }
     
-    $sql = "
-        SELECT 
-            ar.id,
-            ar.patient_id,
-            ar.department,
-            ar.preferred_date,
-            ar.preferred_time,
-            ar.reason,
-            ar.status,
-            ar.created_at,
-            CONCAT(p.first_name, ' ', p.last_name) as patient_name,
-            p.phone as patient_phone,
-            pa.email as patient_email
-        FROM appointment_requests ar
-        JOIN patients p ON ar.patient_id = p.id
-        LEFT JOIN patient_accounts pa ON p.id = pa.patient_id
-        WHERE ar.status = ?
-        ORDER BY ar.created_at DESC
-    ";
-    
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$status]);
     $requests = $stmt->fetchAll();
     
     echo json_encode([
