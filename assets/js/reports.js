@@ -30,11 +30,11 @@ async function renderFinancialReports(container) {
     if (result.success) {
       const invoices = result.data || [];
 
-      // Calculate financial statistics
+      // Calculate financial statistics (case-insensitive status check)
       const totalInvoices = invoices.length;
-      const paidInvoices = invoices.filter((inv) => inv.status === 'Paid');
-      const unpaidInvoices = invoices.filter((inv) => inv.status === 'Unpaid');
-      const pendingInvoices = invoices.filter((inv) => inv.status === 'Pending');
+      const paidInvoices = invoices.filter((inv) => inv.status.toLowerCase() === 'paid');
+      const unpaidInvoices = invoices.filter((inv) => inv.status.toLowerCase() === 'unpaid');
+      const pendingInvoices = invoices.filter((inv) => inv.status.toLowerCase() === 'pending');
 
       const totalRevenue = paidInvoices.reduce((sum, inv) => sum + parseFloat(inv.total), 0);
       const totalOutstanding = unpaidInvoices.reduce((sum, inv) => sum + parseFloat(inv.total), 0);
@@ -138,6 +138,69 @@ async function renderFinancialReports(container) {
             </div>
           </div>
 
+          <!-- Recent Payment Transactions -->
+          ${
+            paidInvoices.length > 0
+              ? `
+          <div style="background: white; padding: 24px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 32px;">
+            <h4 style="margin-top: 0; margin-bottom: 16px; color: #1f2937;">Recent Payments</h4>
+            <div style="overflow-x: auto;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                  <tr style="border-bottom: 2px solid #e5e7eb; text-align: left;">
+                    <th style="padding: 12px 8px; color: #6b7280; font-weight: 600; font-size: 14px;">Invoice ID</th>
+                    <th style="padding: 12px 8px; color: #6b7280; font-weight: 600; font-size: 14px;">Patient</th>
+                    <th style="padding: 12px 8px; color: #6b7280; font-weight: 600; font-size: 14px;">Amount</th>
+                    <th style="padding: 12px 8px; color: #6b7280; font-weight: 600; font-size: 14px;">Payment Method</th>
+                    <th style="padding: 12px 8px; color: #6b7280; font-weight: 600; font-size: 14px;">Transaction ID</th>
+                    <th style="padding: 12px 8px; color: #6b7280; font-weight: 600; font-size: 14px;">Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${paidInvoices
+                    .slice(0, 10)
+                    .map(
+                      (inv) => `
+                    <tr style="border-bottom: 1px solid #f3f4f6;">
+                      <td style="padding: 12px 8px; color: #1f2937; font-weight: 600;">#${
+                        inv.id
+                      }</td>
+                      <td style="padding: 12px 8px; color: #1f2937;">${
+                        inv.patient_name || 'N/A'
+                      }</td>
+                      <td style="padding: 12px 8px; color: #10b981; font-weight: 700;">$${parseFloat(
+                        inv.total
+                      ).toFixed(2)}</td>
+                      <td style="padding: 12px 8px; color: #1f2937;">
+                        ${
+                          inv.payment_method
+                            ? `<span style="padding: 4px 8px; background: #f3f4f6; border-radius: 4px; font-size: 12px;">${
+                                inv.payment_method.charAt(0).toUpperCase() +
+                                inv.payment_method.slice(1)
+                              }</span>`
+                            : '-'
+                        }
+                      </td>
+                      <td style="padding: 12px 8px; color: #6b7280; font-size: 12px; font-family: monospace;">${
+                        inv.transaction_id || '-'
+                      }</td>
+                      <td style="padding: 12px 8px; color: #6b7280; font-size: 14px;">${
+                        inv.payment_date
+                          ? new Date(inv.payment_date).toLocaleDateString()
+                          : new Date(inv.created_at).toLocaleDateString()
+                      }</td>
+                    </tr>
+                  `
+                    )
+                    .join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          `
+              : ''
+          }
+
           <!-- Recent Invoices -->
           <div style="background: white; padding: 24px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
             <h4 style="margin-top: 0; margin-bottom: 16px; color: #1f2937;">Recent Invoices (Last 10)</h4>
@@ -166,19 +229,19 @@ async function renderFinancialReports(container) {
                       ).toFixed(2)}</td>
                       <td style="padding: 12px 8px;">
                         <span style="padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; background: ${
-                          inv.status === 'Paid'
+                          inv.status.toLowerCase() === 'paid'
                             ? '#d1fae5'
-                            : inv.status === 'Unpaid'
+                            : inv.status.toLowerCase() === 'unpaid'
                             ? '#fee2e2'
                             : '#fef3c7'
                         }; color: ${
-                        inv.status === 'Paid'
+                        inv.status.toLowerCase() === 'paid'
                           ? '#065f46'
-                          : inv.status === 'Unpaid'
+                          : inv.status.toLowerCase() === 'unpaid'
                           ? '#991b1b'
                           : '#92400e'
                       };">
-                          ${inv.status}
+                          ${inv.status.charAt(0).toUpperCase() + inv.status.slice(1)}
                         </span>
                       </td>
                       <td style="padding: 12px 8px; color: #6b7280; font-size: 14px;">${new Date(
@@ -406,4 +469,9 @@ function logout() {
 document.addEventListener('DOMContentLoaded', () => {
   setupAdminNavigation();
   renderReports();
+
+  // Auto-refresh reports every 30 seconds to show updated payment data
+  setInterval(() => {
+    renderReports();
+  }, 30000);
 });
