@@ -7,37 +7,6 @@
   <link rel="stylesheet" href="../auth/login.css" />
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
   <style>
-    .quote-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 40px 20px;
-      text-align: center;
-      z-index: -1;
-      color: white;
-    }
-
-    .quote-text {
-      font-size: 28px;
-      font-weight: 600;
-      margin-bottom: 20px;
-      line-height: 1.4;
-      max-width: 600px;
-    }
-
-    .quote-author {
-      font-size: 16px;
-      opacity: 0.9;
-      font-style: italic;
-    }
-
     body {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
@@ -232,41 +201,13 @@
 
     .success-message.show { display: block; }
 
-    .quote-refresh {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: rgba(255, 255, 255, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      color: white;
-      border-radius: 50%;
-      width: 48px;
-      height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-size: 20px;
-    }
-
-    .quote-refresh:hover { background: rgba(255, 255, 255, 0.3); }
-
     @media (max-width: 768px) {
-      .quote-text { font-size: 22px; }
       .login-box { padding: 24px; }
       .login-box h2 { font-size: 20px; }
     }
   </style>
 </head>
 <body>
-  <!-- Background with Quote -->
-  <div id="quote-container" class="quote-container">
-    <div class="quote-text" id="quote-text">Care is a commitment to action.</div>
-    <div class="quote-author" id="quote-author">- Joan Halifax</div>
-    <button class="quote-refresh" onclick="refreshQuote()" title="New quote">↻</button>
-  </div>
-
   <!-- Login Container -->
   <div class="login-container">
     <div class="login-box">
