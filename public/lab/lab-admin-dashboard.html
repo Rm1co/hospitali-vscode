@@ -211,7 +211,6 @@
       <nav>
         <ul>
           <li><a href="lab-admin-dashboard.html" class="active">Lab Management</a></li>
-          <li><a href="reports.html">Lab Reports</a></li>
           <li><a href="#" onclick="logout()">Logout</a></li>
         </ul>
       </nav>
@@ -394,7 +393,7 @@
     // Check authentication
     const admin = JSON.parse(localStorage.getItem('admin') || 'null');
     if (!admin || admin.role !== 'Lab Admin') {
-      window.location.href = 'admin-login.html';
+      window.location.href = '../admin/admin-login.html';
     }
 
     // Display admin info
@@ -1267,7 +1266,7 @@
 
     function logout() {
       localStorage.removeItem('admin');
-      window.location.href = 'admin-login.html';
+      window.location.href = '../admin/admin-login.html';
     }
   </script>
 </body>

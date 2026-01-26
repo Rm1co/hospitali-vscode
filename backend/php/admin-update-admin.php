@@ -38,15 +38,28 @@ try {
         echo json_encode(['success' => true, 'message' => 'Admin account activated']);
     } elseif ($action === 'delete') {
         // Cannot delete super admin
-        $admin = $db->fetchOne('SELECT is_super_admin FROM admins WHERE id = ?', [$adminId]);
-        if ($admin && $admin['is_super_admin']) {
+        $adminToDelete = $db->fetchOne('SELECT is_super_admin, username FROM admins WHERE id = ?', [$adminId]);
+        if (!$adminToDelete) {
+            http_response_code(404);
+            echo json_encode(['success' => false, 'message' => 'Admin account not found']);
+            exit;
+        }
+        
+        if ($adminToDelete['is_super_admin']) {
             http_response_code(403);
             echo json_encode(['success' => false, 'message' => 'Cannot delete Super Admin account']);
             exit;
         }
         
-        $db->delete('admins', 'id = ?', [$adminId]);
-        echo json_encode(['success' => true, 'message' => 'Admin account deleted']);
+        $deletedRows = $db->delete('admins', 'id = ?', [$adminId]);
+        error_log("Deleted admin ID {$adminId} ({$adminToDelete['username']}), rows affected: {$deletedRows}");
+        
+        echo json_encode([
+            'success' => true, 
+            'message' => 'Admin account deleted successfully',
+            'deleted_id' => $adminId,
+            'rows_affected' => $deletedRows
+        ]);
     } else {
         http_response_code(400);
         echo json_encode(['success' => false, 'message' => 'Invalid action']);

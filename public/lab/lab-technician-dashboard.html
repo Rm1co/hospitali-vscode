@@ -216,7 +216,7 @@
     // Check authentication
     const staff = JSON.parse(localStorage.getItem('staff') || 'null');
     if (!staff || staff.role !== 'Lab Technician') {
-      window.location.href = 'staff-login.html';
+      window.location.href = '../staff/staff-login.html';
     }
 
     // Display staff info
@@ -378,7 +378,7 @@
       // Validate staff ID
       if (!staff || !staff.id) {
         errorMsg.textContent = 'Session error. Please log in again.';
-        setTimeout(() => window.location.href = 'staff-login.html', 2000);
+        setTimeout(() => window.location.href = '../staff/staff-login.html', 2000);
         return;
       }
 
@@ -440,7 +440,7 @@
 
     function logout() {
       localStorage.removeItem('staff');
-      window.location.href = 'staff-login.html';
+      window.location.href = '../staff/staff-login.html';
     }
 
     // Load assigned tests on page load

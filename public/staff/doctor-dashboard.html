@@ -585,12 +585,23 @@
       let filtered = allAppointments;
       const now = new Date();
 
+      console.log('Filtering appointments:', filter);
+      console.log('Current time:', now);
+      console.log('All appointments:', allAppointments);
+
       if (filter === 'upcoming') {
-        filtered = allAppointments.filter(a => a.status === 'Scheduled' && new Date(a.appointment_time) > now);
+        filtered = allAppointments.filter(a => {
+          const aptTime = new Date(a.appointment_time);
+          const isScheduled = a.status === 'Scheduled';
+          const isFuture = aptTime > now;
+          console.log(`Appointment ${a.id}: status=${a.status}, time=${a.appointment_time}, aptTime=${aptTime}, isScheduled=${isScheduled}, isFuture=${isFuture}`);
+          return isScheduled && isFuture;
+        });
       } else if (filter === 'completed') {
         filtered = allAppointments.filter(a => a.status === 'Completed');
       }
 
+      console.log('Filtered appointments:', filtered);
       renderAppointments(filtered);
     }
 
