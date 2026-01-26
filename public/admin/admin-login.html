@@ -23,18 +23,15 @@
           <label>Password</label>
           <i class='bx bxs-lock-alt'></i>
         </div>
-
         <button type="submit" class="btn">Login</button>
         <p class="error" id="error-msg"></p>
       </form>
-
       <div class="login-footer">
         <span><a href="../auth/role-selection.html">← Back to Role Selection</a></span>
         <button id="theme-toggle" class="theme-btn">🌙 Dark Mode</button>
       </div>
     </div>
   </div>
-
   <script>
     const themeToggle = document.getElementById('theme-toggle');
     const html = document.documentElement;
@@ -93,8 +90,6 @@
             is_super_admin: data.is_super_admin,
             loginTime: new Date().toISOString()
           }));
-          
-          // Redirect based on role
           if (data.is_super_admin) {
             window.location.href = 'super-admin-panel.html';
           } else {
